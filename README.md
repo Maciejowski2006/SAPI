@@ -20,10 +20,8 @@ using Project.Endpoints;
 
 public static void Main(string[] args)
 {
-    Server sapi = new Server("http://localhost:8000/");
-    
-    // Init HttpListener
-    sapi.Init();
+    // Init SAPI
+    Server sapi = new("http://localhost:8000/");
     
     // Mount endpoints(routes)
     sapi.MountEndpoint(new Ping("ping", Method.GET))
@@ -43,6 +41,7 @@ namespace Project.Endpoints
 {
     public class Ping : Endpoint
     {
+        public Ping(string url, Method method) : base(url, method) { }
         public override void Task(ref HttpListenerRequest request, ref HttpListenerResponse response)
         {
             Console.WriteLine("Ping!");
@@ -53,9 +52,8 @@ namespace Project.Endpoints
             response.ContentEncoding = Encoding.UTF8;
             response.ContentLength64 = data.LongLength;
             
-            await response.OutputStream.WriteAsync(data, 0, data.Length);
+            response.OutputStream.Write(data, 0, data.Length);
         }
-        public Ping(string url, Method method) : base(url, method) { }
     }
 }
 ```
