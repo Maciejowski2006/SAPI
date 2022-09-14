@@ -4,6 +4,12 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Title>SAPI</Title>
+        <Description>Simple API server written in C#</Description>
+        <Copyright>Copyright © Maciejowski 2022</Copyright>
+        <PackageLicenseUrl>https://github.com/Maciejowski2006/SAPI/blob/master/LICENSE.md</PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/Maciejowski2006/SAPI</RepositoryUrl>
     </PropertyGroup>
 
 </Project>
