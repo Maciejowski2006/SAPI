@@ -11,7 +11,7 @@ public class SAPI_Testing
 		sapi.Init();
 		sapi.MountEndpoint(new Get("test", Method.POST));
 		sapi.MountEndpoint(new GetFromAPI("api", Method.GET));
-		
+
 		sapi.Start();
 	}
 }
