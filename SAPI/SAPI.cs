@@ -10,6 +10,10 @@ namespace SAPI
 		public Server(string url)
 		{
 			this.url = url;
+			
+			listener = new HttpListener();
+			listener.Prefixes.Add(url);
+			endpoints = new List<Endpoint>();
 		}
 
 		
@@ -17,12 +21,7 @@ namespace SAPI
 		private string url = "http://localhost:8000";
 		private static int requestCount;
 		private static List<Endpoint> endpoints;
-		public void Init()
-		{
-			listener = new HttpListener();
-			listener.Prefixes.Add(url);
-			endpoints = new List<Endpoint>();
-		}
+		
 		public void Start()
 		{
 			Console.WriteLine("Mounting endpoints...");
