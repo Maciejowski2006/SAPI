@@ -8,6 +8,8 @@ Install-Package SAPI -ProjectName <project>
 ```
 or in your preffered IDE
 
+you can also use SAPI by [downloading](https://github.com/Maciejowski2006/SAPI/releases) and referencing the DLL in your project.
+
 ## Usage
 
 ```csharp
