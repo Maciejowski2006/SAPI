@@ -6,8 +6,11 @@ namespace SAPI
 {
 	public class Server
 	{
-
-		public Server(string url)
+		/// <summary>
+		/// Initalizes SAPI on default address: http://localhost:8000/
+		/// </summary>
+		/// <param name="url">Sets custom url - remember to put "/" at the end. If no parameter is provided, SAPI starts on default address</param>
+		public Server(string url = "http://localhost:8000/")
 		{
 			this.url = url;
 			
@@ -16,19 +19,20 @@ namespace SAPI
 			endpoints = new List<Endpoint>();
 		}
 
-		
 		private static HttpListener listener;
-		private string url = "http://localhost:8000";
+		private string url;
 		private static int requestCount;
 		private static List<Endpoint> endpoints;
 		
+		/// <summary>
+		/// Starts the SAPI server. Execute at the end.
+		/// </summary>
 		public void Start()
 		{
 			Console.WriteLine("Mounting endpoints...");
 			foreach (Endpoint endpoint in endpoints)
-			{
 				Console.WriteLine($"{endpoint.url} : {endpoint.method}");
-			}
+			
 			Console.WriteLine("Done\n");
 			
 			listener.Start();
@@ -49,6 +53,7 @@ namespace SAPI
 			Console.WriteLine($"Method: {request.HttpMethod}");
 			Console.WriteLine($"User IPv4: {request.UserHostAddress}");
 			Console.WriteLine($"User-Agent: {request.UserAgent}");
+			Console.WriteLine("\n");
 		}
 
 		static async Task ConnectionHandler()
@@ -82,6 +87,5 @@ namespace SAPI
 					Utilities.Utilities.Error(HttpStatus.NotFound, ref response);
 			}
 		}
-		
 	}
 }
