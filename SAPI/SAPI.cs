@@ -1,6 +1,6 @@
 ﻿using System.Net;
-using System.Text;
 using SAPI.Endpoints;
+using SAPI.Utilities;
 
 namespace SAPI
 {
@@ -39,10 +39,8 @@ namespace SAPI
 			
 			listener.Close();
 		}
-		public void MountEndpoint(Endpoint endpoint)
-		{
-			endpoints.Add(endpoint);
-		}
+		public void MountEndpoint(Endpoint endpoint) => endpoints.Add(endpoint);
+		
 
 		private static void PrintRequestInfo(HttpListenerRequest request)
 		{
@@ -53,7 +51,7 @@ namespace SAPI
 			Console.WriteLine($"User-Agent: {request.UserAgent}");
 		}
 
-		public static async Task ConnectionHandler()
+		static async Task ConnectionHandler()
 		{
 			while (true)
 			{
@@ -81,16 +79,7 @@ namespace SAPI
 				}
 				// Throw 501 if result is not resolved by any of mounted endpoints
 				if (!requestResolved)
-				{
-					response.StatusCode = 501;
-					response.StatusDescription = "API endpoint not implemented, or you are not supposed to be here";
-					byte[] data = Encoding.UTF8.GetBytes("API endpoint not implemented, or you are not supposed to be here");
-					response.ContentType = "text/html";
-					response.ContentEncoding = Encoding.UTF8;
-					response.ContentLength64 = data.LongLength;
-
-					await response.OutputStream.WriteAsync(data, 0, data.Length);
-				}
+					Utilities.Utilities.Error(HttpStatus.NotFound, ref response);
 			}
 		}
 		
