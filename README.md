@@ -21,7 +21,7 @@ using Project.Endpoints;
 public static void Main(string[] args)
 {
     // Init SAPI
-    Server sapi = new("http://localhost:8000/");
+    Server sapi = new();
     
     // Mount endpoints(routes)
     sapi.MountEndpoint(new Ping("ping", Method.GET))
@@ -34,8 +34,8 @@ public static void Main(string[] args)
 ```csharp
 // Endpoints/Ping.cs
 using System.Net;
-using System.Text;
 using SAPI.Endpoints;
+using SAPI.Utilities;
 
 namespace Project.Endpoints
 {
@@ -46,13 +46,7 @@ namespace Project.Endpoints
         {
             Console.WriteLine("Ping!");
             
-            response.StatusCode = 200;
-            byte[] data = Encoding.UTF8.GetBytes("Pong!");
-            response.ContentType = "text/html";
-            response.ContentEncoding = Encoding.UTF8;
-            response.ContentLength64 = data.LongLength;
-            
-            response.OutputStream.Write(data, 0, data.Length);
+            Utilities.HtmlResponse("Pong!", ref response);
         }
     }
 }
