@@ -5,6 +5,7 @@ namespace SAPI.Utilities
 {
 	public enum HttpStatus
 	{
+		OK,
 		UseProxy,
 		BadRequest,
 		Unauthorized,
@@ -20,6 +21,37 @@ namespace SAPI.Utilities
 	
 	public class Utilities
 	{
+		static Dictionary<HttpStatus, string> httpStatusNames = new()
+		{
+			{HttpStatus.OK, "OK"},
+			{HttpStatus.UseProxy, "Use Proxy"},
+			{HttpStatus.BadRequest, "Bad Request"},
+			{HttpStatus.Unauthorized, "Unauthorized"},
+			{HttpStatus.Forbidden, "Forbidden"},
+			{HttpStatus.NotFound, "Not Found"},
+			{HttpStatus.NotAcceptable, "Not Acceptable"},
+			{HttpStatus.ProxyAuthenticationRequired, "Proxy Authentication Required"},
+			{HttpStatus.InternalServerError, "Internal Server Error"},
+			{HttpStatus.NotImplemented, "Not Implemented"},
+			{HttpStatus.BadGateway, "Bad Gateway"},
+			{HttpStatus.ServiceUnavailable, "Service Unavailable"}
+		};
+		static Dictionary<HttpStatus, int> httpStatusCodes = new()
+		{
+			{HttpStatus.OK, 200},
+			{HttpStatus.UseProxy, 305},
+			{HttpStatus.BadRequest, 400},
+			{HttpStatus.Unauthorized, 401},
+			{HttpStatus.Forbidden, 403},
+			{HttpStatus.NotFound, 404},
+			{HttpStatus.NotAcceptable, 406},
+			{HttpStatus.ProxyAuthenticationRequired, 407},
+			{HttpStatus.InternalServerError, 500},
+			{HttpStatus.NotImplemented, 501},
+			{HttpStatus.BadGateway, 502},
+			{HttpStatus.ServiceUnavailable, 503}
+		};
+		
 		/// <summary>
 		/// Responds to client with HTML page. Execute at the end of the task.
 		/// </summary>
@@ -43,38 +75,10 @@ namespace SAPI.Utilities
 		/// <param name="response">Response ref you got from server - argument in Task()</param>
 		public static void Error(HttpStatus httpStatus, ref HttpListenerResponse response)
 		{
-			Dictionary<HttpStatus, string> httpStatusNames = new()
-			{
-				{HttpStatus.UseProxy, "Use Proxy"},
-				{HttpStatus.BadRequest, "Bad Request"},
-				{HttpStatus.Unauthorized, "Unauthorized"},
-				{HttpStatus.Forbidden, "Forbidden"},
-				{HttpStatus.NotFound, "Not Found"},
-				{HttpStatus.NotAcceptable, "Not Acceptable"},
-				{HttpStatus.ProxyAuthenticationRequired, "Proxy Authentication Required"},
-				{HttpStatus.InternalServerError, "Internal Server Error"},
-				{HttpStatus.NotImplemented, "Not Implemented"},
-				{HttpStatus.BadGateway, "Bad Gateway"},
-				{HttpStatus.ServiceUnavailable, "Service Unavailable"}
-			};
-		Dictionary<HttpStatus, int> httpStatusCodes = new()
-		{
-			{HttpStatus.UseProxy, 305},
-			{HttpStatus.BadRequest, 400},
-			{HttpStatus.Unauthorized, 401},
-			{HttpStatus.Forbidden, 403},
-			{HttpStatus.NotFound, 404},
-			{HttpStatus.NotAcceptable, 406},
-			{HttpStatus.ProxyAuthenticationRequired, 407},
-			{HttpStatus.InternalServerError, 500},
-			{HttpStatus.NotImplemented, 501},
-			{HttpStatus.BadGateway, 502},
-			{HttpStatus.ServiceUnavailable, 503}
-		};
-		string statusName = httpStatusNames[httpStatus];
-		int statusCode = httpStatusCodes[httpStatus];
+			string statusName = httpStatusNames[httpStatus];
+			int statusCode = httpStatusCodes[httpStatus];
 		
-		string page =
+			string page =
 			"<!DOCTYPE>" +
 				"<html>" +
 				"	<head>" +
@@ -94,7 +98,7 @@ namespace SAPI.Utilities
 				"	</body>" +
 				"</html>";
 
-		byte[] data = Encoding.UTF8.GetBytes(page);
+			byte[] data = Encoding.UTF8.GetBytes(page);
 			response.ContentEncoding = Encoding.UTF8;
 			response.ContentType = "text/html";
 			response.ContentLength64 = data.LongLength;

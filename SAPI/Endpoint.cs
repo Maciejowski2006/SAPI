@@ -1,16 +1,6 @@
 ﻿using System.Net;
 namespace SAPI.Endpoints
 {
-	public enum Method
-	{
-		GET,
-		POST,
-		PUT,
-		PATCH,
-		DELETE,
-		OPTIONS,
-		HEAD
-	}
 	public abstract class Endpoint
     {
     	public string url;
