@@ -12,6 +12,7 @@ public class SAPI_Testing
 		sapi.MountEndpoint(new GetFromAPI("api", Method.GET));
 		sapi.MountEndpoint(new Forbid("forbid", Method.GET));
 		sapi.MountEndpoint(new Simple("simple", Method.GET));
+		sapi.MountIEndpoint(new FromInterface());
 
 		sapi.Start();
 	}
