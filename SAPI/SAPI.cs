@@ -56,7 +56,7 @@ namespace SAPI
 			listener.Close();
 		}
 		public void MountEndpoint(Endpoint endpoint) => endpoints.Add(endpoint);
-		public void MountIEndpoint(IEndpoint endpoint) => iEndpoints.Add(endpoint);
+		public void MountEndpoint(IEndpoint endpoint) => iEndpoints.Add(endpoint);
 		private static void PrintDeprecationNotice()
 		{
 			Console.ForegroundColor = ConsoleColor.Yellow;
