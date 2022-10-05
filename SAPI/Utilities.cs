@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace SAPI.Utilities
 {
@@ -62,6 +63,22 @@ namespace SAPI.Utilities
 			byte[] data = Encoding.UTF8.GetBytes(page);
 			response.ContentEncoding = Encoding.UTF8;
 			response.ContentType = "text/html";
+			response.ContentLength64 = data.LongLength;
+			response.StatusCode = 200;
+			
+			response.OutputStream.Write(data, 0, data.Length);
+		}
+		/// <summary>
+		/// Responds to client with JSON object. Execute at the end of the task.
+		/// </summary>
+		/// <param name="json">Add here your object to send with json</param>
+		/// <param name="response">Response ref you got from server - argument in Task()</param>
+		public static void JsonResponse<T>(T json, ref HttpListenerResponse response)
+		{
+			string serializedJson = JsonConvert.SerializeObject(json);
+			byte[] data = Encoding.UTF8.GetBytes(serializedJson);
+			response.ContentEncoding = Encoding.UTF8;
+			response.ContentType = "application/josn";
 			response.ContentLength64 = data.LongLength;
 			response.StatusCode = 200;
 			
