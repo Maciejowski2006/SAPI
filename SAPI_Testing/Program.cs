@@ -13,6 +13,7 @@ public class SAPI_Testing
 		sapi.MountEndpoint(new Forbid("forbid", Method.GET));
 		sapi.MountEndpoint(new Simple("simple", Method.GET));
 		sapi.MountEndpoint(new FromInterface());
+		sapi.MountEndpoint(new Json());
 
 		sapi.Start();
 	}
