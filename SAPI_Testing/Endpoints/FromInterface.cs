@@ -13,6 +13,3 @@ public class FromInterface : IEndpoint
 		Utilities.HtmlResponse("hi", ref response);
 	}
 }
-
-}
-

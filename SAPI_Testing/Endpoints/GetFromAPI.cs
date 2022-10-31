@@ -12,5 +12,3 @@ public class GetFromAPI : Endpoint
 		Console.WriteLine("Get request from api recorded");
 	}
 }
-
-}
