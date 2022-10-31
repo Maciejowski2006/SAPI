@@ -8,7 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\SAPI\SAPI.csproj" />
+        <ProjectReference Include="..\SAPI\SAPI.csproj"/>
     </ItemGroup>
 
 </Project>

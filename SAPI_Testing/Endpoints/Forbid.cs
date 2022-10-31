@@ -1,16 +1,14 @@
 ﻿using System.Net;
 using SAPI.Endpoints;
 using SAPI.Utilities;
-namespace Testing.Endpoints
+
+namespace Testing.Endpoints;
+
+public class Forbid : Endpoint
 {
-	public class Forbid : Endpoint
+	public Forbid(string url, Method method) : base(url, method) { }
+	public override void Task(ref HttpListenerRequest request, ref HttpListenerResponse response)
 	{
-		public Forbid(string url, Method method) : base(url, method) { }
-		public override void Task(ref HttpListenerRequest request, ref HttpListenerResponse response)
-		{
-			Utilities.Error(HttpStatus.NotFound, ref response);
-		}
+		Utilities.Error(HttpStatus.NotFound, ref response);
 	}
 }
-
-
