@@ -1,21 +1,17 @@
 ﻿using Testing.Endpoints;
 using SAPI;
-using SAPI.Endpoints;
 
 public class SAPI_Testing
 {
-	public static void Main(string[] args)
+	public static void Main()
 	{
 		Server sapi = new();
 
-		sapi.MountEndpoint(new Get("test", Method.POST));
-		sapi.MountEndpoint(new GetFromAPI("api", Method.GET));
-		sapi.MountEndpoint(new Forbid("forbid", Method.GET));
-		sapi.MountEndpoint(new Simple("simple", Method.GET));
 		sapi.MountEndpoint(new FromInterface());
 		sapi.MountEndpoint(new Json());
 		sapi.MountEndpoint(new SendJson());
-
+		sapi.MountEndpoint(new DynamicGet());
+		
 		sapi.Start();
 	}
 }

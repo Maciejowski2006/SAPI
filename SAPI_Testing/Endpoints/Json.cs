@@ -9,10 +9,9 @@ public class Json : IEndpoint
 {
 	public string url { get; set; } = "json";
 	public Method method { get; set; } = Method.GET;
-	public void Task(ref HttpListenerRequest request, ref HttpListenerResponse response)
+	public void Task(ref HttpListenerRequest request, ref HttpListenerResponse response, List<string> parameters)
 	{
 		JsonModel model = new("test", 69);
-
 		Utilities.JsonResponse(model, ref response);
 	}
 }
