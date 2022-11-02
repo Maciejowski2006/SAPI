@@ -77,7 +77,7 @@ public class Utilities
 		string serializedJson = JsonConvert.SerializeObject(json);
 		byte[] data = Encoding.UTF8.GetBytes(serializedJson);
 		response.ContentEncoding = Encoding.UTF8;
-		response.ContentType = "application/josn";
+		response.ContentType = "application/json";
 		response.ContentLength64 = data.LongLength;
 		response.StatusCode = 200;
 
