@@ -95,7 +95,7 @@ public class Server
 					// Split URLs into fragments
 					string[] requestUrl = request.Url.AbsolutePath.Trim('/').Split("/");
 					string[] endpointUrl = endpoint.url.Split("/");
-					List<string> parameters = new();
+					Dictionary<string, string> parameters = new();
 					
 					if (requestUrl.Length != endpointUrl.Length)
 						continue;
@@ -108,7 +108,7 @@ public class Server
 
 						if (dynamicRegex.IsMatch(endpointUrl[i]))
 						{
-							parameters.Add(requestUrl[i]);
+							parameters.Add(endpointUrl[i].Trim(':'), requestUrl[i]);
 							continue;
 						}
 
