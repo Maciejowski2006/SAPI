@@ -25,11 +25,10 @@ public static void Main(string[] args)
     Server sapi = new();
     
     // Mount endpoints(routes)
-    // sapi.MountEndpoint(new Ping("ping", Method.GET)) - this is an old method - now deprecated, use this:
     sapi.MountIEndpoint(new Ping());
     
     
-    // Finally start SAPI
+    // Start SAPI
     sapi.Start();
 }
 ```
@@ -41,14 +40,12 @@ using SAPI.Utilities;
 
 namespace Project.Endpoints
 {
-    // public class Ping : Endpoint - this is an old method - now deprecated, use this:
     public class Ping : IEndpoint
     {
-        // New things: these are the parameters for the endpoint, that were present in constructor - now they are here
         public string url { get; } = "ping";
         public Method method { get; } = Method.GET;
 
-        public override void Task(ref HttpListenerRequest request, ref HttpListenerResponse response)
+        public override void Task(ref HttpListenerRequest request, ref HttpListenerResponse response, Dictionary<string, string> parameters)
         {
             Console.WriteLine("Ping!");
             
