@@ -45,11 +45,8 @@ public class Server
 		listener.Close();
 	}
 
-	public void MountEndpoint(IEndpoint endpoint)
-	{
-		endpoints.Add(endpoint);
-	}
-
+	public void MountEndpoint(IEndpoint endpoint) => endpoints.Add(endpoint);
+	
 	private static void PrintRequestInfo(HttpListenerRequest request)
 	{
 		Console.WriteLine("Request #{0}", ++requestCount);
@@ -90,37 +87,43 @@ public class Server
 			
 			// Endpoint handling
 			foreach (IEndpoint endpoint in endpoints)
+			{
 				if (request.HttpMethod == endpoint.method.ToString())
 				{
 					// Split URLs into fragments
 					string[] requestUrl = request.Url.AbsolutePath.Trim('/').Split("/");
 					string[] endpointUrl = endpoint.url.Split("/");
+					bool urlMatched = true;
 					Dictionary<string, string> parameters = new();
-					
+
 					if (requestUrl.Length != endpointUrl.Length)
 						continue;
-					
+
 					// Check if requested URL matches static or dynamic endpoint
 					for (int i = 0; i < requestUrl.Length; i++)
 					{
 						if (String.Equals(endpointUrl[i], requestUrl[i]))
 							continue;
-
+						
 						if (dynamicRegex.IsMatch(endpointUrl[i]))
 						{
 							parameters.Add(endpointUrl[i].Trim(':'), requestUrl[i]);
 							continue;
 						}
 
-						return;
+						urlMatched = false;
+						break;
 					}
 					
-					// If URL matches, execute matching handler
-					endpoint.Task(ref request, ref response, parameters);
-					response.StatusCode = 200;
-					requestResolved = true;
-					response.Close();
+					if (urlMatched)
+					{
+						endpoint.Task(ref request, ref response, parameters);
+						response.StatusCode = 200;
+						requestResolved = true;
+						response.Close();
+					}
 				}
+			}
 
 			// Throw 404 if result is not resolved by any of mounted endpoints
 			if (!requestResolved)
