@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Text.RegularExpressions;
 using SAPI.Endpoints;
 using SAPI.Utilities;
 
@@ -6,6 +7,12 @@ namespace SAPI;
 
 public class Server
 {
+	private static HttpListener listener;
+	private string url;
+	private static int requestCount;
+	private static List<IEndpoint> endpoints;
+	private static Regex dynamicRegex = new(":(.+?)(?:(?=/)|$)", RegexOptions.Compiled);
+	
 	/// <summary>
 	/// Initalizes SAPI on default address: http://localhost:8000/
 	/// </summary>
@@ -16,36 +23,18 @@ public class Server
 
 		listener = new HttpListener();
 		listener.Prefixes.Add(url);
-		endpoints = new List<Endpoint>();
-		iEndpoints = new List<IEndpoint>();
+		endpoints = new List<IEndpoint>();
 	}
 
-	private static HttpListener listener;
-	private string url;
-	private static int requestCount;
-	private static List<Endpoint> endpoints;
-	private static List<IEndpoint> iEndpoints;
 
 	/// <summary>
 	/// Starts the SAPI server. Execute at the end.
 	/// </summary>
 	public void Start()
 	{
-		if (!Equals(endpoints, Enumerable.Empty<Endpoint>()))
-		{
-			PrintDeprecationNotice();
-
-			Console.WriteLine("Mounting endpoints...");
-			foreach (Endpoint endpoint in endpoints)
-				Console.WriteLine($"{endpoint.url} : {endpoint.method}");
-			Console.Write("\n");
-		}
-
-		Console.WriteLine("Mounting interface endpoints...");
-		foreach (IEndpoint endpoint in iEndpoints)
-			Console.WriteLine($"{endpoint.url} : {endpoint.method}");
-
-		Console.WriteLine("Done\n");
+		Console.WriteLine("Mounted endpoints:");
+		foreach (IEndpoint endpoint in endpoints)
+			Console.WriteLine($"{endpoint.method} {endpoint.url}");
 
 		listener.Start();
 		Console.WriteLine($"Listening for connections on {url}");
@@ -55,21 +44,9 @@ public class Server
 
 		listener.Close();
 	}
-	public void MountEndpoint(Endpoint endpoint)
-	{
-		endpoints.Add(endpoint);
-	}
-	public void MountEndpoint(IEndpoint endpoint)
-	{
-		iEndpoints.Add(endpoint);
-	}
-	private static void PrintDeprecationNotice()
-	{
-		Console.ForegroundColor = ConsoleColor.Yellow;
-		Console.WriteLine("WARNING: Standard endpoints are deprecated - they are going to be removed in the next major version. Please adapt your endpoints to interfaces. For help see documentation");
-		Console.ResetColor();
-	}
 
+	public void MountEndpoint(IEndpoint endpoint) => endpoints.Add(endpoint);
+	
 	private static void PrintRequestInfo(HttpListenerRequest request)
 	{
 		Console.WriteLine("Request #{0}", ++requestCount);
@@ -94,7 +71,7 @@ public class Server
 			bool requestResolved = false;
 
 			// Check if path is mapped to any endpoint
-			if (Equals(endpoints, Enumerable.Empty<Endpoint>()) && Equals(iEndpoints, Enumerable.Empty<IEndpoint>()))
+			if (Equals(endpoints, Enumerable.Empty<IEndpoint>()))
 			{
 				Utilities.Utilities.Error(HttpStatus.NotImplemented, ref response);
 				continue;
@@ -107,27 +84,46 @@ public class Server
 				response.Close();
 				continue;
 			}
-
-			// Deprecated endpoint handling
-			foreach (Endpoint endpoint in endpoints)
+			
+			// Endpoint handling
+			foreach (IEndpoint endpoint in endpoints)
+			{
 				if (request.HttpMethod == endpoint.method.ToString())
-					if (request.Url.AbsolutePath == $"/{endpoint.url}")
+				{
+					// Split URLs into fragments
+					string[] requestUrl = request.Url.AbsolutePath.Trim('/').Split("/");
+					string[] endpointUrl = endpoint.url.Split("/");
+					bool urlMatched = true;
+					Dictionary<string, string> parameters = new();
+
+					if (requestUrl.Length != endpointUrl.Length)
+						continue;
+
+					// Check if requested URL matches static or dynamic endpoint
+					for (int i = 0; i < requestUrl.Length; i++)
 					{
-						endpoint.Task(ref request, ref response);
+						if (String.Equals(endpointUrl[i], requestUrl[i]))
+							continue;
+						
+						if (dynamicRegex.IsMatch(endpointUrl[i]))
+						{
+							parameters.Add(endpointUrl[i].Trim(':'), requestUrl[i]);
+							continue;
+						}
+
+						urlMatched = false;
+						break;
+					}
+					
+					if (urlMatched)
+					{
+						endpoint.Task(ref request, ref response, parameters);
 						response.StatusCode = 200;
 						requestResolved = true;
 						response.Close();
-						PrintDeprecationNotice();
 					}
-			// New endpoint handling
-			foreach (IEndpoint endpoint in iEndpoints)
-				if (request.HttpMethod == endpoint.method.ToString() && request.Url.AbsolutePath == $"/{endpoint.url}")
-				{
-					endpoint.Task(ref request, ref response);
-					response.StatusCode = 200;
-					requestResolved = true;
-					response.Close();
 				}
+			}
 
 			// Throw 404 if result is not resolved by any of mounted endpoints
 			if (!requestResolved)

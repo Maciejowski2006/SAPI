@@ -22,5 +22,6 @@ public interface IEndpoint
 	/// </summary>
 	/// <param name="request">Request info from server</param>
 	/// <param name="response">Response is used to communicate to client</param>
-	void Task(ref HttpListenerRequest request, ref HttpListenerResponse response);
+	/// <param name="parameters">List of parameters provided from dynamic endpoint</param>
+	void Task(ref HttpListenerRequest request, ref HttpListenerResponse response, Dictionary<string, string> parameters);
 }
