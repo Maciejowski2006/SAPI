@@ -7,10 +7,10 @@ public class SAPI_Testing
 	{
 		Server sapi = new();
 
-		sapi.MountEndpoint(new Html());
 		sapi.MountEndpoint(new GetJson());
 		sapi.MountEndpoint(new SendJson());
 		sapi.MountEndpoint(new DynamicGet());
+		sapi.MountEndpoint(new Html());
 		
 		sapi.Start();
 	}
