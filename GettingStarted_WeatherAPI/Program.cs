@@ -1,6 +1,5 @@
 ﻿using SAPI;
 using WeatherAPI.Endpoints;
-using WeatherAPI.Services;
 
 namespace ServerAPI;
 
