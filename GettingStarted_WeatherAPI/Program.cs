@@ -8,8 +8,6 @@ public class ServerAPI
 {
 	public static void Main()
 	{
-		Database.PopulateDB();
-		
 		Server sapi = new();
 
 		sapi.MountEndpoint(new GetWeather());
