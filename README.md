@@ -25,7 +25,7 @@ public static void Main(string[] args)
     Server sapi = new();
     
     // Mount endpoints(routes)
-    sapi.MountIEndpoint(new Ping());
+    sapi.MountEndpoint(new Ping());
     
     
     // Start SAPI
