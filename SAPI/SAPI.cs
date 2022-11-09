@@ -9,35 +9,42 @@ public class Server
 {
 	private static HttpListener listener;
 	private string url;
-	private static int requestCount;
+	private static bool requestResolved;
 	private static List<IEndpoint> endpoints;
 	private static Regex dynamicRegex = new(":(.+?)(?:(?=/)|$)", RegexOptions.Compiled);
-	
+
 	/// <summary>
 	/// Initalizes SAPI on default address: http://localhost:8000/
 	/// </summary>
 	/// <param name="url">Sets custom url - remember to put "/" at the end. If no parameter is provided, SAPI starts on default address</param>
 	public Server(string url = "http://localhost:8000/")
 	{
+		Logger logAccess = new("access", Logger.LogType.Access);
+		Logger logSystem = new("system", Logger.LogType.System);
+		Internals.access = logAccess;
+		Internals.system = logSystem;
+		Config.system = logSystem;
+		
+		Config.Init();
 		this.url = url;
-
+		this.url = Config.ReadConfig().Url;
+		
 		listener = new HttpListener();
 		listener.Prefixes.Add(url);
 		endpoints = new List<IEndpoint>();
 	}
-
 
 	/// <summary>
 	/// Starts the SAPI server. Execute at the end.
 	/// </summary>
 	public void Start()
 	{
-		Console.WriteLine("Mounted endpoints:");
+		Internals.WriteLine("Mounted endpoints:");
 		foreach (IEndpoint endpoint in endpoints)
-			Console.WriteLine($"{endpoint.method} {endpoint.url}");
+			Internals.WriteLine($"{endpoint.method} {endpoint.url}");
 
 		listener.Start();
-		Console.WriteLine($"Listening for connections on {url}");
+		Internals.WriteLine($"Listening for connections on {url}");
 
 		Task connectionHandler = ConnectionHandler();
 		connectionHandler.GetAwaiter().GetResult();
@@ -46,16 +53,6 @@ public class Server
 	}
 
 	public void MountEndpoint(IEndpoint endpoint) => endpoints.Add(endpoint);
-	
-	private static void PrintRequestInfo(HttpListenerRequest request)
-	{
-		Console.WriteLine("Request #{0}", ++requestCount);
-		Console.WriteLine($"URL: {request.Url}");
-		Console.WriteLine($"Method: {request.HttpMethod}");
-		Console.WriteLine($"User IPv4: {request.UserHostAddress}");
-		Console.WriteLine($"User-Agent: {request.UserAgent}");
-		Console.WriteLine("\n");
-	}
 
 	private static async Task ConnectionHandler()
 	{
@@ -66,9 +63,7 @@ public class Server
 			HttpListenerRequest request = ctx.Request;
 			HttpListenerResponse response = ctx.Response;
 
-			PrintRequestInfo(request);
-
-			bool requestResolved = false;
+			Internals.PrintRequestInfo(request);
 
 			// Check if path is mapped to any endpoint
 			if (Equals(endpoints, Enumerable.Empty<IEndpoint>()))
@@ -80,7 +75,7 @@ public class Server
 			if (request.HttpMethod == Method.POST.ToString() && request.ContentLength64 == 0)
 			{
 				Utilities.Utilities.Error(HttpStatus.BadRequest, ref response);
-				Console.WriteLine("Content body is empty: aborting");
+				Internals.WriteLine("Content body is empty: aborting");
 				response.Close();
 				continue;
 			}
