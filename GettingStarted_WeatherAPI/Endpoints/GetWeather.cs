@@ -4,7 +4,6 @@ using SAPI.Utilities;
 using WeatherAPI.Models;
 using WeatherAPI.Services;
 
-
 namespace WeatherAPI.Endpoints;
 
 public class GetWeather : IEndpoint
