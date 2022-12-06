@@ -11,6 +11,7 @@ public class SAPI_Testing
 		sapi.MountEndpoint(new SendJson());
 		sapi.MountEndpoint(new DynamicGet());
 		sapi.MountEndpoint(new Html());
+		sapi.MountEndpoint(new ApiAuth());
 		
 		sapi.Start();
 	}
