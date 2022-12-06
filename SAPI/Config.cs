@@ -14,13 +14,11 @@ internal static class Config
 		if (File.Exists(configFile))
 		{
 			if (ReadConfig().ConfigVersion != new ConfigFile().ConfigVersion)
-			{
 				CreateConfig(true);
-			}
+			
 			return;
 		}
 		CreateConfig();
-		
 	}
 	private static void CreateConfig(bool update = false)
 	{
