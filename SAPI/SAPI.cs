@@ -30,7 +30,7 @@ public class Server
 		this.url = Config.ReadConfig().Url;
 		
 		listener = new HttpListener();
-		listener.Prefixes.Add(url);
+		listener.Prefixes.Add(this.url);
 		endpoints = new List<IEndpoint>();
 	}
 
