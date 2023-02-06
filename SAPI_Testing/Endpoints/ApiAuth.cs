@@ -1,6 +1,6 @@
 ﻿using System.Net;
 using SAPI.Endpoints;
-using SAPI.Utilities;
+using SAPI.Utilities.Auth;
 
 namespace Testing.Endpoints;
 
@@ -13,13 +13,20 @@ public class ApiAuth : IEndpoint
 	{
 		List<BasicAuthCredentials> credentials = new ()
 		{
-			new BasicAuthCredentials("dub", "iel"),
 			new BasicAuthCredentials("user", "pass"),
-			new BasicAuthCredentials("user", "inny"),
+			new BasicAuthCredentials("other", "inny"),
 			
 		};
-		bool keyAuth = Utilities.CheckForKeyAuthorization(new List<string>() {"api", "bruh", "duh"}, "x-api-key", ref request);
-		bool userPassAuth = Utilities.CheckForUserPassAuthorization(credentials, ref request);
+	
+		List<string> keys = new()
+		{
+			"b4a4bc584acbd4",
+			"asdf1",
+			"bfasd5"
+		};
+
+		bool keyAuth = Auth.CheckForKey(keys, "x-api-key", ref request);
+		bool userPassAuth = Auth.CheckForUserPass(credentials, ref request);
 		
 		Console.WriteLine($"Key Auth: {keyAuth}");
 		Console.WriteLine($"User+Password Auth: {userPassAuth}");

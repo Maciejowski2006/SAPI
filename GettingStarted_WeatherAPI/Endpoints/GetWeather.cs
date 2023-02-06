@@ -1,6 +1,6 @@
 ﻿using System.Net;
 using SAPI.Endpoints;
-using SAPI.Utilities;
+using SAPI.Utilities.Json;
 using WeatherAPI.Models;
 using WeatherAPI.Services;
 
@@ -21,7 +21,7 @@ public class GetWeather : IEndpoint
 		foreach (City city in cities)
 		{
 			if (city.Country == parameters["country"] && city.Name == parameters["city"])
-				Utilities.JsonResponse(city, ref response);
+				Json.Response(city, ref response);
 		}
 	}
 }

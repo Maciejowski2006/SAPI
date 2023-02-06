@@ -1,6 +1,6 @@
 ﻿using System.Net;
 using SAPI.Endpoints;
-using SAPI.Utilities;
+using SAPI.Utilities.Json;
 namespace Testing.Endpoints;
 
 public class DynamicGet : IEndpoint
@@ -16,6 +16,6 @@ public class DynamicGet : IEndpoint
 
 		Data data = new(parameters["id"], parameters["name"]);
 		
-		Utilities.JsonResponse(data, ref response);
+		Json.Response(data, ref response);
 	}
 }

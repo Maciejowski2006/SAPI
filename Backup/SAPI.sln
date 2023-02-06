@@ -1,8 +1,5 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.33027.164
-MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAPI", "SAPI\SAPI.csproj", "{497E2E94-6C18-4401-9E1F-F541031896A0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAPI_Testing", "SAPI_Testing\SAPI_Testing.csproj", "{E74FAAB0-05EB-4613-80A4-F9B458BD0B1B}"
@@ -33,11 +30,5 @@ Global
 		{3EF8AF0A-B199-464C-A03F-3F62A79E0259}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3EF8AF0A-B199-464C-A03F-3F62A79E0259}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3EF8AF0A-B199-464C-A03F-3F62A79E0259}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {981702B3-186E-4314-96A8-2995C7CE1EB5}
 	EndGlobalSection
 EndGlobal

@@ -1,6 +1,6 @@
 ﻿using System.Net;
 using SAPI.Endpoints;
-using SAPI.Utilities;
+using SAPI.Utilities.Json;
 using ServerAPI.Models;
 using ServerAPI.Services;
 
@@ -12,7 +12,7 @@ public class AddServer : IEndpoint
 	public Method method { get; } = Method.POST;
 	public void Task(ref HttpListenerRequest request, ref HttpListenerResponse response, Dictionary<string, string> parameters)
 	{
-		Utilities.JsonFetch(out Server server, ref request);
+		Json.Fetch(out Server server, ref request);
 		Database.AddServer(server);
 	}
 }

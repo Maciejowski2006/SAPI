@@ -1,6 +1,6 @@
 ﻿using System.Net;
 using SAPI.Endpoints;
-using SAPI.Utilities;
+using SAPI.Utilities.Json;
 
 namespace Testing.Endpoints;
 
@@ -13,7 +13,7 @@ public class GetJson : IEndpoint
 	{
 		DataModel model = new(14, "Hello, World!");
 		
-		Utilities.JsonResponse(model, ref response);
+		Json.Response(model, ref response);
 	}
 }
 public class SendJson : IEndpoint
@@ -22,10 +22,10 @@ public class SendJson : IEndpoint
 	public Method method { get; } = Method.POST;
 	public void Task(ref HttpListenerRequest request, ref HttpListenerResponse response, Dictionary<string, string> parameters)
 	{
-		Utilities.JsonFetch(out DataModel model, ref request);
+		Json.Fetch(out DataModel model, ref request);
 		
 		Console.WriteLine($"ID: {model.id}\nMessage: {model.message}");
 		
-		Utilities.JsonResponse(model, ref response);
+		Json.Response(model, ref response);
 	}
 }
