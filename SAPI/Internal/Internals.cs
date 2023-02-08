@@ -9,7 +9,7 @@ internal static class Internals
 	{
 		access.Log(request: request);
 
-		if (Config.ReadConfig().DebugMode)
+		if (Config.ReadConfig().Verbose)
 		{
 			Console.WriteLine($"Time: {DateTime.Now}");
 			Console.WriteLine($"URL: {request.Url}");
