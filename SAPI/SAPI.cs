@@ -113,7 +113,6 @@ public class Server
 					if (urlMatched)
 					{
 						endpoint.Task(ref request, ref response, parameters);
-						response.StatusCode = 200;
 						requestResolved = true;
 						response.Close();
 					}
