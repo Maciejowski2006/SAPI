@@ -59,27 +59,27 @@ namespace SAPI.Utilities.StaticContent
 			{
 				try
 				{
-					Stream input = new FileStream(path, FileMode.Open);
+					using (FileStream input = File.Open(path, FileMode.Open))
+					{
+						//Adding permanent http response headers
+						string mime;
+						response.ContentType = mimeTypeMappings.TryGetValue(Path.GetExtension(path), out mime)
+							? mime
+							: "application/octet-stream";
 
-					//Adding permanent http response headers
-					string mime;
-					response.ContentType = mimeTypeMappings.TryGetValue(Path.GetExtension(path), out mime)
-						? mime
-						: "application/octet-stream";
+						response.ContentLength64 = input.Length;
+						response.AddHeader("Date", DateTime.Now.ToString("r"));
+						response.AddHeader("Last-Modified", File.GetLastWriteTime(path).ToString("r"));
 
-					response.ContentLength64 = input.Length;
-					response.AddHeader("Date", DateTime.Now.ToString("r"));
-					response.AddHeader("Last-Modified", File.GetLastWriteTime(path).ToString("r"));
-
-					byte[] buffer = new byte[1024 * 32];
-					int nbytes;
-					while ((nbytes = input.Read(buffer, 0, buffer.Length)) > 0)
-						response.OutputStream.Write(buffer, 0, nbytes);
-
-
-					input.Close();
-					response.OutputStream.Flush();
-
+						byte[] buffer = new byte[1024 * 32];
+						int nbytes;
+						while ((nbytes = input.Read(buffer, 0, buffer.Length)) > 0)
+							response.OutputStream.Write(buffer, 0, nbytes);
+						
+						input.Close();
+						response.OutputStream.Flush();
+					}
+					
 					response.StatusCode = (int) HttpStatusCode.OK;
 				}
 				catch (Exception e)
