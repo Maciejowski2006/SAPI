@@ -95,18 +95,28 @@ namespace SAPI.Utilities.StaticContent
 
 		public static void HostDirectory(string path, Dictionary<string, string> parameters, ref HttpListenerResponse response)
 		{
-			List<string> filesInDir = Directory.GetFiles(path).ToList();
-			
-			foreach (string fileInDir in filesInDir)
+			try
 			{
-				string fileName = Path.GetFileName(fileInDir);
+				List<string> filesInDir = Directory.GetFiles(path).ToList();
 
-				if (fileName == parameters["file"])
+				foreach (string fileInDir in filesInDir)
 				{
-					FileResponse(fileInDir, ref response);
-					break;
+					string fileName = Path.GetFileName(fileInDir);
+
+					if (fileName == parameters["file"])
+					{
+						FileResponse(fileInDir, ref response);
+						break;
+					}
 				}
 			}
+			catch (Exception e)
+			{
+				Console.WriteLine($"Error: {e}");
+				Utilities.Error(HttpStatus.NotFound, ref response);
+			}
+			
+			
 		}
 	}
 }
