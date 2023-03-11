@@ -17,7 +17,7 @@ public class Server
 	/// Initalizes SAPI on default address: http://localhost:8000/
 	/// </summary>
 	/// <param name="url">Sets custom url - remember to put "/" at the end. If no parameter is provided, SAPI starts on default address</param>
-	public Server(string url = "http://localhost:8000/")
+	public Server()
 	{
 		Logger logAccess = new("access", Logger.LogType.Access);
 		Logger logSystem = new("system", Logger.LogType.System);
@@ -26,8 +26,7 @@ public class Server
 		Config.system = logSystem;
 		
 		Config.Init();
-		this.url = url;
-		this.url = Config.ReadConfig().Url;
+		url = Config.ReadConfig().Url;
 		
 		listener = new HttpListener();
 		listener.Prefixes.Add(this.url);
