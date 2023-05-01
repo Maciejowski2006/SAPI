@@ -11,6 +11,7 @@
         <PackageLicenseUrl>https://github.com/Maciejowski2006/SAPI/blob/master/LICENSE.md</PackageLicenseUrl>
         <RepositoryUrl>https://github.com/Maciejowski2006/SAPI</RepositoryUrl>
         <PackageVersion>7.0.0</PackageVersion>
+        <LangVersion>11</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>

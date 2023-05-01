@@ -93,7 +93,7 @@ namespace SAPI.Utilities.StaticContent
 			response.OutputStream.Close();
 		}
 
-		public static void HostDirectory(string path, Dictionary<string, string> parameters, ref HttpListenerResponse response)
+		public static void HostDirectory(string path, ref HttpListenerResponse response, Dictionary<string, string> parameters)
 		{
 			try
 			{
@@ -115,8 +115,37 @@ namespace SAPI.Utilities.StaticContent
 				Console.WriteLine($"Error: {e}");
 				Utilities.Error(HttpStatus.NotFound, ref response);
 			}
-			
-			
+		}
+		public static void HostDirectoryRecursively(string path, string url, ref HttpListenerRequest request, ref HttpListenerResponse response)
+		{
+			try
+			{
+				path = path.Replace('\\', '/');
+				string recursivePath = request.Url.AbsolutePath.Substring(url.LastIndexOf('{') + 1);
+				List<string> filesInDir = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories).ToList();
+				List<string> absoluteFiles = new();
+				
+				
+				foreach (string file in filesInDir)
+					absoluteFiles.Add(file.Substring(path.Length).Trim('\\').Replace('\\', '/'));
+				
+				IEnumerable<(string rel, string abs)> zip = filesInDir.Zip(absoluteFiles);
+
+				foreach ((string rel, string abs) file in zip)
+				{
+					if (recursivePath == file.abs)
+					{
+						FileResponse(file.rel, ref response);
+						break;
+					}
+				}
+
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine($"Error: {e}");
+				Utilities.Error(HttpStatus.NotFound, ref response);
+			}
 		}
 	}
 }

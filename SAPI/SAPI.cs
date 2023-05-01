@@ -24,10 +24,10 @@ public class Server
 		Internals.access = logAccess;
 		Internals.system = logSystem;
 		Config.system = logSystem;
-		
+
 		Config.Init();
 		url = Config.ReadConfig().Url;
-		
+
 		listener = new HttpListener();
 		listener.Prefixes.Add(this.url);
 		endpoints = new List<IEndpoint>();
@@ -70,6 +70,7 @@ public class Server
 				Utilities.Utilities.Error(HttpStatus.NotImplemented, ref response);
 				continue;
 			}
+
 			// Check if content is empty
 			if (request.HttpMethod == Method.POST.ToString() && request.ContentLength64 == 0)
 			{
@@ -78,43 +79,44 @@ public class Server
 				response.Close();
 				continue;
 			}
-			
+
 			// Endpoint handling
 			foreach (IEndpoint endpoint in endpoints)
 			{
-				if (request.HttpMethod == endpoint.method.ToString())
+				if (request.HttpMethod != endpoint.method.ToString())
+					continue;
+
+				// Split URLs into fragments
+				string[] requestUrl = request.Url.AbsolutePath.Trim('/').Split("/");
+				string[] endpointUrl = endpoint.url.Split("/");
+				bool urlMatched = true;
+				Dictionary<string, string> parameters = new();
+				
+				// Check if requested URL matches static or dynamic endpoint
+				for (int i = 0; i < endpointUrl.Length; i++)
 				{
-					// Split URLs into fragments
-					string[] requestUrl = request.Url.AbsolutePath.Trim('/').Split("/");
-					string[] endpointUrl = endpoint.url.Split("/");
-					bool urlMatched = true;
-					Dictionary<string, string> parameters = new();
-
-					if (requestUrl.Length != endpointUrl.Length)
+					if (String.Equals(endpointUrl[i], requestUrl[i]))
 						continue;
-
-					// Check if requested URL matches static or dynamic endpoint
-					for (int i = 0; i < requestUrl.Length; i++)
-					{
-						if (String.Equals(endpointUrl[i], requestUrl[i]))
-							continue;
-						
-						if (dynamicRegex.IsMatch(endpointUrl[i]))
-						{
-							parameters.Add(endpointUrl[i].Trim(':'), requestUrl[i]);
-							continue;
-						}
-
-						urlMatched = false;
-						break;
-					}
 					
-					if (urlMatched)
+					if (dynamicRegex.IsMatch(endpointUrl[i]))
 					{
-						endpoint.Task(ref request, ref response, parameters);
-						requestResolved = true;
-						response.Close();
+						parameters.Add(endpointUrl[i].Trim(':'), requestUrl[i]);
+						continue;
 					}
+
+					if (String.Equals(endpointUrl[i], "{recursive}"))
+						break;
+					
+
+					urlMatched = false;
+					break;
+				}
+
+				if (urlMatched)
+				{
+					endpoint.Task(ref request, ref response, parameters);
+					requestResolved = true;
+					response.Close();
 				}
 			}
 
