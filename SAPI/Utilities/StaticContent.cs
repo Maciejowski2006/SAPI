@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using Sentry;
 
 namespace SAPI.Utilities.StaticContent
 {
@@ -112,7 +113,7 @@ namespace SAPI.Utilities.StaticContent
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine($"Error: {e}");
+				Internals.WriteLine($"Error: {e}");
 				Utilities.Error(HttpStatus.NotFound, ref response);
 			}
 		}
@@ -124,7 +125,6 @@ namespace SAPI.Utilities.StaticContent
 				string recursivePath = request.Url.AbsolutePath.Substring(url.LastIndexOf('{') + 1);
 				List<string> filesInDir = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories).ToList();
 				List<string> absoluteFiles = new();
-				
 				
 				foreach (string file in filesInDir)
 					absoluteFiles.Add(file.Substring(path.Length).Trim('\\').Replace('\\', '/'));
@@ -139,11 +139,14 @@ namespace SAPI.Utilities.StaticContent
 						break;
 					}
 				}
-
+			}
+			catch (DirectoryNotFoundException e)
+			{
+				Internals.WriteLine($"File not found in directory. Error: {e}");
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine($"Error: {e}");
+				SentryWrapper.CaptureException(e);
 				Utilities.Error(HttpStatus.NotFound, ref response);
 			}
 		}

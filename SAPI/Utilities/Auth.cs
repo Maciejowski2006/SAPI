@@ -26,7 +26,7 @@ namespace SAPI.Utilities.Auth
 		}
 		catch
 		{
-			Console.WriteLine($"Request does not have {headerName}.");
+			Internals.WriteLine($"Request does not have {headerName}.");
 			return false;
 		}
 	}
@@ -60,7 +60,7 @@ namespace SAPI.Utilities.Auth
 		}
 		catch
 		{
-			Console.WriteLine($"Request does not have Authorization header.");
+			Internals.WriteLine($"Request does not have Authorization header.");
 			return false;
 		}
 		return false;
