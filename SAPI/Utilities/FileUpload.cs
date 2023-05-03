@@ -18,7 +18,6 @@ namespace SAPI.Utilities.FileUpload
 		private static string tempFile;
 
 		public delegate string CustomFileNameHandler(string filePath);
-		private static CustomFileNameHandler customFileNameHandler = null;
 
 
 		public static string SaveFile(ref HttpListenerRequest request, string path, CustomFileNameHandler customFileNameHandler = null)
