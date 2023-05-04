@@ -51,10 +51,8 @@ internal static class Config
 
 internal class ConfigFile
 {
-	public float ConfigVersion = 2.0f;
+	public float ConfigVersion = 3.0f;
 	public bool Verbose = false;
 	public string Url = "http://localhost:8000/";
-	public bool EnableCaching = true;
-	public bool CacheOnStartup = false;
-	public int CacheTime = 300;
+	public bool EnableErrorReporting = true;
 }

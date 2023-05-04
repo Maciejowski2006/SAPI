@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using Sentry;
 
 namespace SAPI.Utilities.StaticContent
 {
@@ -98,6 +99,7 @@ namespace SAPI.Utilities.StaticContent
 			response.OutputStream.Close();
 		}
 
+
 		/// <summary>
 		/// Exposes a directory contents to be accessed by clients
 		/// </summary>
@@ -123,7 +125,40 @@ namespace SAPI.Utilities.StaticContent
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine($"Error: {e}");
+				Internals.WriteLine($"Error: {e}");
+				Utilities.Error(HttpStatus.NotFound, ref response);
+			}
+		}
+		public static void HostDirectoryRecursively(string path, string url, ref HttpListenerRequest request, ref HttpListenerResponse response)
+		{
+			try
+			{
+				path = path.Replace('\\', '/');
+				string recursivePath = request.Url.AbsolutePath.Substring(url.LastIndexOf('{') + 1);
+				List<string> filesInDir = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories).ToList();
+				List<string> absoluteFiles = new();
+				
+				foreach (string file in filesInDir)
+					absoluteFiles.Add(file.Substring(path.Length).Trim('\\').Replace('\\', '/'));
+				
+				IEnumerable<(string rel, string abs)> zip = filesInDir.Zip(absoluteFiles);
+
+				foreach ((string rel, string abs) file in zip)
+				{
+					if (recursivePath == file.abs)
+					{
+						FileResponse(file.rel, ref response);
+						break;
+					}
+				}
+			}
+			catch (DirectoryNotFoundException e)
+			{
+				Internals.WriteLine($"File not found in directory. Error: {e}");
+			}
+			catch (Exception e)
+			{
+				SentryWrapper.CaptureException(e);
 				Utilities.Error(HttpStatus.NotFound, ref response);
 			}
 		}
