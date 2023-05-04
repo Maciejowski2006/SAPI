@@ -22,6 +22,7 @@ namespace SAPI.Utilities.Auth
 					if (request.Headers.Get(headerName).Contains(key))
 						return true;
 				}
+
 				return false;
 			}
 			catch
@@ -29,14 +30,8 @@ namespace SAPI.Utilities.Auth
 				Console.WriteLine($"Request does not have {headerName}.");
 				return false;
 			}
+		}
 
-			return false;
-		}
-		catch
-		{
-			Internals.WriteLine($"Request does not have {headerName}.");
-			return false;
-		}
 		/// <summary>
 		/// Checks if user with provided credentials exists.
 		/// </summary>
@@ -65,12 +60,12 @@ namespace SAPI.Utilities.Auth
 					}
 				}
 			}
-
 			catch
-		  {
-			  Internals.WriteLine($"Request does not have Authorization header.");
-			  return false;
-      }
+			{
+				Internals.WriteLine($"Request does not have Authorization header.");
+			}
+
+			return false;
 		}
 	}
 }
