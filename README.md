@@ -1,18 +1,22 @@
 # SAPI - Simple API
 SAPI is a library for creating APIs with C#. It's simple by design and allows for a lot of flexibility.
 
+![Nuget](https://img.shields.io/nuget/dt/SAPI?color=%20%230390fc&label=Downloads)
+![Nuget](https://img.shields.io/nuget/v/SAPI?color=%20%230390fc&label=NuGet)
+![GitHub](https://img.shields.io/github/license/Maciejowski2006/SAPI?color=%20%230390fc&label=License)
+
 ## Installation
 Add as dependency in NuGet
 ```shell
 Install-Package SAPI -ProjectName <project>
 ```
-or in your preferred IDE:
+In your preferred IDE:
 ![SAPI in rider's NuGet PM](./Screenshots/nuget.png)
 
-you can also use SAPI by [downloading](https://github.com/Maciejowski2006/SAPI/releases) and referencing the DLL in your project.
+By [downloading](https://github.com/Maciejowski2006/SAPI/releases) and referencing the DLL in your project.
 
 ## Usage
-For detailed explanation You can also see wiki [wiki](https://github.com/Maciejowski2006/SAPI/wiki)
+For detailed explanation You can also see [wiki](https://github.com/Maciejowski2006/SAPI/wiki)
 ```csharp
 // Program.cs
 using SAPI;
