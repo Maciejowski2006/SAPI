@@ -1,17 +1,10 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Text;
-using System;
-using System.IO;
 using FileTypeChecker.Abstracts;
-using FileTypeChecker.Types;
-using FileTypeChecker.Extensions;
 using FileTypeChecker;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace SAPI.Utilities.FileUpload
 {
-	// TODO: Documentation
 	public class FileUpload
 	{
 		private static string fileName;
@@ -19,29 +12,85 @@ namespace SAPI.Utilities.FileUpload
 
 		public delegate string CustomFileNameHandler(string filePath);
 
+		public enum FileNamingSchemes
+		{
+			GUID,
+			Timestamp,
+			DateTime,
+			Custom
+		}
 
-		public static string SaveFile(ref HttpListenerRequest request, string path, CustomFileNameHandler customFileNameHandler = null)
+		/// <summary>
+		/// Saves file from request to specified location.
+		/// </summary>
+		/// <param name="path">Path to which file should be saved in</param>
+		/// <param name="namingScheme">Naming scheme which file will follow</param>
+		/// <param name="request">Pass from Task()</param>
+		/// <returns>Path to file</returns>
+		public static string SaveFile(string path, FileNamingSchemes namingScheme, ref HttpListenerRequest request)
 		{
 			SaveFileImpl(request.ContentEncoding, GetBoundary(request.ContentType), request.InputStream);
 
-			if (customFileNameHandler == null)
+			switch (namingScheme)
 			{
-				fileName = Guid.NewGuid().ToString();
+				case FileNamingSchemes.GUID:
+				{
+					fileName = Guid.NewGuid().ToString();
+					fileName += DetermineFileExtension(tempFile);
 
-				fileName += DetermineFileExtension(tempFile);
-			}
-			else
-			{
-				fileName = customFileNameHandler(tempFile);
+					break;
+				}
+				case FileNamingSchemes.Timestamp:
+				{
+					fileName = Convert.ToString((UInt64)DateTime.Now.AddMilliseconds(2).Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds);
+					fileName += DetermineFileExtension(tempFile);
+
+					break;
+
+				}
+				case FileNamingSchemes.DateTime:
+				{
+					DateTime dt = DateTime.Now.AddMilliseconds(2);
+
+					fileName = $"{dt.Day}-{dt.Month}-{dt.Year}_{dt.Hour}.{dt.Minute}.{dt.Second}.{dt.Millisecond}";
+					fileName += DetermineFileExtension(tempFile);
+
+					break;
+				}
 			}
 
 			string finalPath = Path.Combine(path, fileName);
 
 			File.Copy(tempFile, finalPath);
-
+			File.Delete(tempFile);
 			return finalPath;
 		}
 
+		/// <summary>
+		/// Saves file from request to specified location.
+		/// </summary>
+		/// <param name="path">Path to which file should be saved in</param>
+		/// <param name="customFileNameHandler">Custom handler(method) for naming files -> return string(with extension)</param>
+		/// <param name="request">Pass from Task()</param>
+		/// <returns>Path to file</returns>
+		public static string SaveFile(string path, CustomFileNameHandler customFileNameHandler, ref HttpListenerRequest request)
+		{
+			SaveFileImpl(request.ContentEncoding, GetBoundary(request.ContentType), request.InputStream);
+
+			fileName = customFileNameHandler(tempFile);
+
+			string finalPath = Path.Combine(path, fileName);
+
+			File.Copy(tempFile, finalPath);
+			File.Delete(tempFile);
+			return finalPath;
+		}
+
+		/// <summary>
+		/// Determines file extension based on it's header
+		/// </summary>
+		/// <param name="file">Path to file</param>
+		/// <returns>File extension(with ".")</returns>
 		public static string DetermineFileExtension(string file)
 		{
 			using (var fs = File.OpenRead(file))
@@ -50,12 +99,6 @@ namespace SAPI.Utilities.FileUpload
 				string ext = $".{f.Extension}";
 				return ext;
 			}
-		}
-
-
-		private static string GetBoundary(string type)
-		{
-			return "--" + type.Split(';')[1].Split('=')[1];
 		}
 
 		private static void SaveFileImpl(Encoding enc, String boundary, Stream input)
@@ -68,8 +111,8 @@ namespace SAPI.Utilities.FileUpload
 			using (FileStream output = new FileStream(tempFile, FileMode.Create, FileAccess.Write))
 			{
 				Byte[] buffer = new Byte[1024];
-				Int32 len = input.Read(buffer, 0, 1024);
-				Int32 startPos = -1;
+				int len = input.Read(buffer, 0, 1024);
+				int startPos = -1;
 
 				// Find start boundary
 				while (true)
@@ -92,7 +135,7 @@ namespace SAPI.Utilities.FileUpload
 				}
 
 				// Skip four lines (Boundary, Content-Disposition, Content-Type, and a blank)
-				for (Int32 i = 0; i < 4; i++)
+				for (int i = 0; i < 4; i++)
 				{
 					while (true)
 					{
@@ -119,7 +162,7 @@ namespace SAPI.Utilities.FileUpload
 
 				while (true)
 				{
-					Int32 endPos = IndexOf(buffer, len, boundaryBytes);
+					int endPos = IndexOf(buffer, len, boundaryBytes);
 					if (endPos >= 0)
 					{
 						if (endPos > 0) output.Write(buffer, 0, endPos - 2);
@@ -138,12 +181,16 @@ namespace SAPI.Utilities.FileUpload
 				}
 			}
 		}
+		private static string GetBoundary(string type)
+		{
+			return "--" + type.Split(';')[1].Split('=')[1];
+		}
 
-		private static Int32 IndexOf(Byte[] buffer, Int32 len, Byte[] boundaryBytes)
+		private static int IndexOf(Byte[] buffer, int len, Byte[] boundaryBytes)
 		{
 			for (Int32 i = 0; i <= len - boundaryBytes.Length; i++)
 			{
-				Boolean match = true;
+				bool match = true;
 				for (Int32 j = 0; j < boundaryBytes.Length && match; j++)
 				{
 					match = buffer[i + j] == boundaryBytes[j];
