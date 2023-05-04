@@ -15,6 +15,7 @@ public class SAPI_Testing
 		sapi.MountEndpoint(new Static());
 		sapi.MountEndpoint(new Dir());
 		sapi.MountEndpoint(new Cookies());
+		sapi.MountEndpoint(new Upload());
 		sapi.MountEndpoint(new Recursive());
 		
 		sapi.Start();

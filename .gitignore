@@ -3,5 +3,7 @@ obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
-/.idea/
+.idea/
 .vs/
+SAPI/Folder.DotSettings.user
+SAPI.sln.DotSettings.user

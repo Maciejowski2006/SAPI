@@ -54,6 +54,11 @@ namespace SAPI.Utilities.StaticContent
 			{".zip", "application/zip"},
 		};
 		
+		/// <summary>
+		/// Responds to client with file
+		/// </summary>
+		/// <param name="path">Path to file</param>
+		/// <param name="response">Pass from Task()</param>
 		public static void FileResponse(string path, ref HttpListenerResponse response)
 		{
 			if (File.Exists(path))
@@ -94,7 +99,14 @@ namespace SAPI.Utilities.StaticContent
 			response.OutputStream.Close();
 		}
 
-		public static void HostDirectory(string path, ref HttpListenerResponse response, Dictionary<string, string> parameters)
+
+		/// <summary>
+		/// Exposes a directory contents to be accessed by clients
+		/// </summary>
+		/// <param name="path">Path to directory</param>
+		/// <param name="parameters">Pass from Task()</param>
+		/// <param name="response">Pass from Task()</param>
+		public static void HostDirectory(string path, Dictionary<string, string> parameters, ref HttpListenerResponse response)
 		{
 			try
 			{

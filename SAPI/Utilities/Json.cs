@@ -36,6 +36,5 @@ namespace SAPI.Utilities.Json
 
 			reader.Close();
 		}
-		
 	}
 }
