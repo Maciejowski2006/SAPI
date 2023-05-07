@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GettingStarted_ServerDB", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GettingStarted_WeatherAPI", "GettingStarted_WeatherAPI\GettingStarted_WeatherAPI.csproj", "{3EF8AF0A-B199-464C-A03F-3F62A79E0259}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAPI.TestRunner", "SAPI.TestRunner\SAPI.TestRunner.csproj", "{6D90253B-2E95-4EDD-9BD2-CC3F2F1D34D6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{3EF8AF0A-B199-464C-A03F-3F62A79E0259}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3EF8AF0A-B199-464C-A03F-3F62A79E0259}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3EF8AF0A-B199-464C-A03F-3F62A79E0259}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D90253B-2E95-4EDD-9BD2-CC3F2F1D34D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D90253B-2E95-4EDD-9BD2-CC3F2F1D34D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D90253B-2E95-4EDD-9BD2-CC3F2F1D34D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D90253B-2E95-4EDD-9BD2-CC3F2F1D34D6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
