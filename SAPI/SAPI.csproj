@@ -7,11 +7,12 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Title>SAPI</Title>
         <Description>Simple API server written in C#</Description>
-        <Copyright>Copyright © Maciejowski 2022</Copyright>
+        <Copyright>Copyright © Maciejowski 2022-2023</Copyright>
         <PackageLicenseUrl>https://github.com/Maciejowski2006/SAPI/blob/master/LICENSE.md</PackageLicenseUrl>
         <RepositoryUrl>https://github.com/Maciejowski2006/SAPI</RepositoryUrl>
         <PackageVersion>9.0.0</PackageVersion>
         <LangVersion>11</LangVersion>
+        <Authors>Maciejowski</Authors>
     </PropertyGroup>
 
     <ItemGroup>
