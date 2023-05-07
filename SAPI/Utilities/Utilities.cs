@@ -57,6 +57,7 @@ public class Utilities
 	/// </summary>
 	/// <param name="page">Link to your .html file</param>
 	/// <param name="response">Response ref you got from server - argument in Task()</param>
+	[Obsolete("HtmlResponse is deprecated, if you want to host SSR websites, please use Wolf (https://github.com/Maciejowski2006/Wolf)")]
 	public static void HtmlResponse(string page, ref HttpListenerResponse response)
 	{
 		byte[] data = Encoding.UTF8.GetBytes(page);
@@ -66,6 +67,8 @@ public class Utilities
 		response.StatusCode = 200;
 
 		response.OutputStream.Write(data, 0, data.Length);
+		
+		Internals.WriteLine("HtmlResponse is deprecated, if you want to host SSR websites, please use Wolf (https://github.com/Maciejowski2006/Wolf)");
 	}
 	
 	/// <summary>
