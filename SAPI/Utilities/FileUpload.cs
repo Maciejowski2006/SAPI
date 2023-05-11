@@ -1,10 +1,12 @@
 ﻿using System.Net;
 using System.Text;
+using FileTypeChecker.Abstracts;
 using FileTypeChecker;
+using SAPI.Internal;
 
 namespace SAPI.Utilities
 {
-	public static class FileUpload
+	public class FileUpload
 	{
 		private static string fileName;
 		private static string tempFile;
@@ -15,8 +17,7 @@ namespace SAPI.Utilities
 		{
 			GUID,
 			Timestamp,
-			DateTime,
-			Custom
+			DateTime
 		}
 
 		/// <summary>
@@ -41,14 +42,14 @@ namespace SAPI.Utilities
 				}
 				case FileNamingSchemes.Timestamp:
 				{
-					fileName = Convert.ToString((ulong)DateTime.Now.AddMilliseconds(2).Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds);
+					fileName = Convert.ToString((UInt64)DateTime.Now.AddMilliseconds(2).Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds);
 					fileName += DetermineFileExtension(tempFile);
 
 					break;
 				}
 				case FileNamingSchemes.DateTime:
 				{
-					var dt = DateTime.Now.AddMilliseconds(2);
+					DateTime dt = DateTime.Now.AddMilliseconds(2);
 
 					fileName = $"{dt.Day}-{dt.Month}-{dt.Year}_{dt.Hour}.{dt.Minute}.{dt.Second}.{dt.Millisecond}";
 					fileName += DetermineFileExtension(tempFile);
@@ -57,7 +58,7 @@ namespace SAPI.Utilities
 				}
 			}
 
-			var finalPath = Path.Combine(path, fileName);
+			string finalPath = Path.Combine(path, fileName);
 
 			File.Copy(tempFile, finalPath);
 			File.Delete(tempFile);
@@ -77,7 +78,7 @@ namespace SAPI.Utilities
 
 			fileName = customFileNameHandler(tempFile);
 
-			var finalPath = Path.Combine(path, fileName);
+			string finalPath = Path.Combine(path, fileName);
 
 			File.Copy(tempFile, finalPath);
 			File.Delete(tempFile);
@@ -91,49 +92,49 @@ namespace SAPI.Utilities
 		/// <returns>File extension(with ".")</returns>
 		public static string DetermineFileExtension(string file)
 		{
-			using (var fs = File.OpenRead(file))
+			using (FileStream fs = File.OpenRead(file))
 			{
-				var f = FileTypeValidator.GetFileType(fs);
-				var ext = $".{f.Extension}";
+				IFileType f = FileTypeValidator.GetFileType(fs);
+				string ext = $".{f.Extension}";
 				return ext;
 			}
 		}
 
-		private static void SaveFileImpl(Encoding enc, string boundary, Stream input)
+		private static void SaveFileImpl(Encoding enc, String boundary, Stream input)
 		{
-			var boundaryBytes = enc.GetBytes(boundary);
-			var boundaryLen = boundaryBytes.Length;
+			Byte[] boundaryBytes = enc.GetBytes(boundary);
+			Int32 boundaryLen = boundaryBytes.Length;
 
 			tempFile = Path.GetTempFileName();
 
-			using (var output = new FileStream(tempFile, FileMode.Create, FileAccess.Write))
+			using (FileStream output = new FileStream(tempFile, FileMode.Create, FileAccess.Write))
 			{
-				var buffer = new byte[1024];
-				var len = input.Read(buffer, 0, 1024);
-				var startPos = -1;
+				Byte[] buffer = new Byte[1024];
+				int len = input.Read(buffer, 0, 1024);
+				int startPos = -1;
 
 				// Find start boundary
 				while (true)
 				{
-					if (len == 0) throw new Exception("Start Boundaray Not Found");
+					if (len == 0)
+						Internals.WriteLine("Start boundary not found");
+
 
 					startPos = IndexOf(buffer, len, boundaryBytes);
 					if (startPos >= 0)
-					{
 						break;
-					}
-					else
-					{
-						Array.Copy(buffer, len - boundaryLen, buffer, 0, boundaryLen);
-						len = input.Read(buffer, boundaryLen, 1024 - boundaryLen);
-					}
+
+					Array.Copy(buffer, len - boundaryLen, buffer, 0, boundaryLen);
+					len = input.Read(buffer, boundaryLen, 1024 - boundaryLen);
 				}
 
 				// Skip four lines (Boundary, Content-Disposition, Content-Type, and a blank)
-				for (var i = 0; i < 4; i++)
+				for (int i = 0; i < 4; i++)
+				{
 					while (true)
 					{
-						if (len == 0) throw new Exception("Preamble not Found.");
+						if (len == 0)
+							Internals.WriteLine("Preamble not found");
 
 						startPos = Array.IndexOf(buffer, enc.GetBytes("\n")[0], startPos);
 						if (startPos >= 0)
@@ -141,27 +142,25 @@ namespace SAPI.Utilities
 							startPos++;
 							break;
 						}
-						else
-						{
-							len = input.Read(buffer, 0, 1024);
-						}
+
+						len = input.Read(buffer, 0, 1024);
 					}
+				}
 
 				Array.Copy(buffer, startPos, buffer, 0, len - startPos);
 				len -= startPos;
 
 				while (true)
 				{
-					var endPos = IndexOf(buffer, len, boundaryBytes);
+					int endPos = IndexOf(buffer, len, boundaryBytes);
 					if (endPos >= 0)
 					{
 						if (endPos > 0) output.Write(buffer, 0, endPos - 2);
 						break;
 					}
-					else if (len <= boundaryLen)
-					{
-						throw new Exception("End Boundary Not Found");
-					}
+
+					if (len <= boundaryLen)
+						Internals.WriteLine("End boundary not found");
 					else
 					{
 						output.Write(buffer, 0, len - boundaryLen);
@@ -172,19 +171,18 @@ namespace SAPI.Utilities
 			}
 		}
 
-		private static string GetBoundary(string type)
-		{
-			return "--" + type.Split(';')[1].Split('=')[1];
-		}
+		private static string GetBoundary(string type) => "--" + type.Split(';')[1].Split('=')[1];
 
-		private static int IndexOf(byte[] buffer, int len, byte[] boundaryBytes)
+		private static int IndexOf(Byte[] buffer, int len, Byte[] boundaryBytes)
 		{
-			for (var i = 0; i <= len - boundaryBytes.Length; i++)
+			for (Int32 i = 0; i <= len - boundaryBytes.Length; i++)
 			{
-				var match = true;
-				for (var j = 0; j < boundaryBytes.Length && match; j++) match = buffer[i + j] == boundaryBytes[j];
+				bool match = true;
+				for (Int32 j = 0; j < boundaryBytes.Length && match; j++)
+					match = buffer[i + j] == boundaryBytes[j];
 
-				if (match) return i;
+				if (match)
+					return i;
 			}
 
 			return -1;

@@ -12,11 +12,6 @@ public class Upload : IEndpoint
 	public void Task(ref HttpListenerRequest request, ref HttpListenerResponse response, Dictionary<string, string> parameters)
 	{
 		FileUpload.SaveFile(Environment.CurrentDirectory, FileUpload.FileNamingSchemes.GUID, ref request);
-		string s = FileUpload.SaveFile(Environment.CurrentDirectory, (f) =>
-		{
-			return "bruh" + FileUpload.DetermineFileExtension(f);
-		}, ref request);
-
 
 		Error.ErrorPageResponse(HttpStatus.NotAcceptable, ref response);
 	}
