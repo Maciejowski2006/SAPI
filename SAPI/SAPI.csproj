@@ -17,9 +17,9 @@
 
     <ItemGroup>
 
-        <PackageReference Include="File.TypeChecker" Version="4.0.0" />
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-        <PackageReference Include="Sentry" Version="3.31.0" />
+        <PackageReference Include="File.TypeChecker" Version="4.0.0"/>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
+        <PackageReference Include="Sentry" Version="3.31.0"/>
 
     </ItemGroup>
 

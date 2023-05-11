@@ -1,6 +1,6 @@
 ﻿using System.Net;
 using SAPI.Endpoints;
-using SAPI.Utilities.StaticContent;
+using SAPI.Utilities;
 
 namespace Testing.Endpoints
 {

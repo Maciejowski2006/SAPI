@@ -1,6 +1,6 @@
 ﻿using System.Net;
 using SAPI.Endpoints;
-using SAPI.Utilities.Json;
+using SAPI.Utilities;
 using WeatherAPI.Models;
 using WeatherAPI.Services;
 

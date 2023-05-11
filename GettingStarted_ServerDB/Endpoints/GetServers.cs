@@ -1,6 +1,6 @@
 ﻿using System.Net;
 using SAPI.Endpoints;
-using SAPI.Utilities.Json;
+using SAPI.Utilities;
 using ServerAPI.Services;
 using Server = ServerAPI.Models.Server;
 namespace ServerAPI.Endpoints;

@@ -1,6 +1,6 @@
 ﻿using Sentry;
 
-namespace SAPI.Utilities
+namespace SAPI.LLAPI
 {
 	internal class SentryWrapper
 	{

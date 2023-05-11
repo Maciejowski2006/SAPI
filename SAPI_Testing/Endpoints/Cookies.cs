@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using SAPI.Endpoints;
 using SAPI.Utilities;
-using SAPI.Utilities.Cookies;
 
 namespace Testing.Endpoints
 {
@@ -11,15 +10,15 @@ namespace Testing.Endpoints
 		public Method method { get; set; } = Method.GET;
 		public void Task(ref HttpListenerRequest request, ref HttpListenerResponse response, Dictionary<string, string> parameters)
 		{
-			if (SAPI.Utilities.Cookies.Cookies.CheckForCookie("visit", out Cookie cookie, ref request))
+			if (SAPI.Utilities.Cookies.CheckForCookie("visit", out Cookie cookie, ref request))
 			{
-				SAPI.Utilities.Cookies.Cookies.GiveCookie("visit", "false", ref response);
-				Utilities.Error(HttpStatus.OK, ref response);
+				SAPI.Utilities.Cookies.GiveCookie("visit", "false", ref response);
+				Error.ErrorPageResponse(HttpStatus.OK, ref response);
 			}
 			else
 			{
-				SAPI.Utilities.Cookies.Cookies.GiveCookie("visit", "true", ref response);
-				Utilities.Error(HttpStatus.Forbidden, ref response);
+				SAPI.Utilities.Cookies.GiveCookie("visit", "true", ref response);
+				Error.ErrorPageResponse(HttpStatus.Forbidden, ref response);
 			}
 		}
 	}

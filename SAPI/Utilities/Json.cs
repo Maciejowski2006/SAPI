@@ -2,7 +2,7 @@
 using System.Text;
 using Newtonsoft.Json;
 
-namespace SAPI.Utilities.Json
+namespace SAPI.Utilities
 {
 	public class Json
 	{
@@ -13,8 +13,8 @@ namespace SAPI.Utilities.Json
 		/// <param name="response">Response ref you got from server - argument in Task()</param>
 		public static void Response<T>(T json, ref HttpListenerResponse response)
 		{
-			string serializedJson = JsonConvert.SerializeObject(json);
-			byte[] data = Encoding.UTF8.GetBytes(serializedJson);
+			var serializedJson = JsonConvert.SerializeObject(json);
+			var data = Encoding.UTF8.GetBytes(serializedJson);
 			response.ContentEncoding = Encoding.UTF8;
 			response.ContentType = "application/json";
 			response.ContentLength64 = data.LongLength;
@@ -22,6 +22,7 @@ namespace SAPI.Utilities.Json
 
 			response.OutputStream.Write(data, 0, data.Length);
 		}
+
 		/// <summary>
 		/// Fetches structured JSON data from request. Execute before trying to access given data
 		/// </summary>
@@ -31,7 +32,7 @@ namespace SAPI.Utilities.Json
 		{
 			StreamReader reader = new(request.InputStream, request.ContentEncoding);
 
-			string data = reader.ReadToEnd();
+			var data = reader.ReadToEnd();
 			json = JsonConvert.DeserializeObject<T>(data);
 
 			reader.Close();

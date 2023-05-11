@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using SAPI;
 using SAPI.Endpoints;
-using SAPI.Utilities.Auth;
+using SAPI.Utilities;
 
 namespace Testing.Endpoints;
 

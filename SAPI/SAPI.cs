@@ -1,159 +1,159 @@
 ﻿using System.Net;
 using System.Text.RegularExpressions;
 using SAPI.Endpoints;
+using SAPI.Internal;
+using SAPI.LLAPI;
 using SAPI.Utilities;
 using Sentry;
 
-namespace SAPI;
-
-public class Server
+namespace SAPI
 {
-	private static HttpListener listener;
-	private string url;
-	private static bool requestResolved;
-	private static List<IEndpoint> endpoints;
-	private static Regex dynamicRegex = new(":(.+?)(?:(?=/)|$)", RegexOptions.Compiled);
-
-	/// <summary>
-	/// Initalizes SAPI on default address: http://localhost:8000/
-	/// </summary>
-	/// <param name="url">Sets custom url - remember to put "/" at the end. If no parameter is provided, SAPI starts on default address</param>
-	public Server()
+	public class Server
 	{
-		Logger logAccess = new("access", Logger.LogType.Access);
-		Logger logSystem = new("system", Logger.LogType.System);
-		Internals.access = logAccess;
-		Internals.system = logSystem;
-		Config.system = logSystem;
+		private static HttpListener listener;
+		private string url;
+		private static bool requestResolved;
+		private static List<IEndpoint> endpoints;
+		private static Regex dynamicRegex = new(":(.+?)(?:(?=/)|$)", RegexOptions.Compiled);
 
-		Config.Init();
-		url = Config.ReadConfig().Url;
-
-		
-		listener = new HttpListener();
-		listener.Prefixes.Add(this.url);
-		endpoints = new List<IEndpoint>();
-	}
-
-	/// <summary>
-	/// Starts the SAPI server. Execute at the end.
-	/// </summary>
-	public void Start()
-	{
-		if (Config.ReadConfig().EnableErrorReporting)
+		/// <summary>
+		/// Initalizes SAPI on default address: http://localhost:8000/
+		/// </summary>
+		/// <param name="url">Sets custom url - remember to put "/" at the end. If no parameter is provided, SAPI starts on default address</param>
+		public Server()
 		{
-			using (SentrySdk.Init(o =>
-			{
-				o.Dsn = "https://024ccd09f43a47e889fbb78388d7b916@o1346432.ingest.sentry.io/4505120926138368";
-				o.Debug = false;
-				o.TracesSampleRate = 1.0;
-				o.IsGlobalModeEnabled = true;
-			}))
-			{
-				Internals.WriteLine("Sentry initialized");
+			Logger logAccess = new("access", Logger.LogType.Access);
+			Logger logSystem = new("system", Logger.LogType.System);
+			Internals.access = logAccess;
+			Internals.system = logSystem;
+			Config.system = logSystem;
+
+			Config.Init();
+			url = Config.ReadConfig().Url;
+
+
+			listener = new HttpListener();
+			listener.Prefixes.Add(url);
+			endpoints = new List<IEndpoint>();
+		}
+
+		/// <summary>
+		/// Starts the SAPI server. Execute at the end.
+		/// </summary>
+		public void Start()
+		{
+			if (Config.ReadConfig().EnableErrorReporting)
+				using (SentrySdk.Init(o =>
+				       {
+					       o.Dsn = "https://024ccd09f43a47e889fbb78388d7b916@o1346432.ingest.sentry.io/4505120926138368";
+					       o.Debug = false;
+					       o.TracesSampleRate = 1.0;
+					       o.IsGlobalModeEnabled = true;
+				       }))
+				{
+					Internals.WriteLine("Sentry initialized");
+					StartImpl();
+				}
+			else
 				StartImpl();
-			}
 		}
-		else
+
+		private void StartImpl()
 		{
-			StartImpl();
+			Internals.WriteLine("Mounted endpoints:");
+			foreach (var endpoint in endpoints)
+				Internals.WriteLine($"{endpoint.method} {endpoint.url}");
+
+			listener.Start();
+			Internals.WriteLine($"Listening for connections on {url}");
+
+			var connectionHandler = ConnectionHandler();
+			connectionHandler.GetAwaiter().GetResult();
+
+			listener.Close();
 		}
-	}
 
-	private void StartImpl()
-	{
-		Internals.WriteLine("Mounted endpoints:");
-		foreach (IEndpoint endpoint in endpoints)
-			Internals.WriteLine($"{endpoint.method} {endpoint.url}");
-
-		listener.Start();
-		Internals.WriteLine($"Listening for connections on {url}");
-
-		Task connectionHandler = ConnectionHandler();
-		connectionHandler.GetAwaiter().GetResult();
-
-		listener.Close();
-	}
-
-	public void MountEndpoint(IEndpoint endpoint) => endpoints.Add(endpoint);
-
-	private static async Task ConnectionHandler()
-	{
-		while (true)
+		public void MountEndpoint(IEndpoint endpoint)
 		{
-			try
-			{
-				HttpListenerContext ctx = await listener.GetContextAsync();
+			endpoints.Add(endpoint);
+		}
 
-				HttpListenerRequest request = ctx.Request;
-				HttpListenerResponse response = ctx.Response;
-
-				Internals.PrintRequestInfo(request);
-
-				// Check if path is mapped to any endpoint
-				if (Equals(endpoints, Enumerable.Empty<IEndpoint>()))
+		private static async Task ConnectionHandler()
+		{
+			while (true)
+				try
 				{
-					Utilities.Utilities.Error(HttpStatus.NotImplemented, ref response);
-					continue;
-				}
+					var ctx = await listener.GetContextAsync();
 
-				// Check if content is empty
-				if (request.HttpMethod == Method.POST.ToString() && request.ContentLength64 == 0)
-				{
-					Utilities.Utilities.Error(HttpStatus.BadRequest, ref response);
-					Internals.WriteLine("Content body is empty: aborting");
-					response.Close();
-					continue;
-				}
+					var request = ctx.Request;
+					var response = ctx.Response;
 
-				// Endpoint handling
-				foreach (IEndpoint endpoint in endpoints)
-				{
-					if (request.HttpMethod != endpoint.method.ToString())
-						continue;
+					Internals.PrintRequestInfo(request);
 
-					// Split URLs into fragments
-					string[] requestUrl = request.Url.AbsolutePath.Trim('/').Split("/");
-					string[] endpointUrl = endpoint.url.Split("/");
-					bool urlMatched = true;
-					Dictionary<string, string> parameters = new();
-
-					// Check if requested URL matches static or dynamic endpoint
-					for (int i = 0; i < endpointUrl.Length; i++)
+					// Check if path is mapped to any endpoint
+					if (Equals(endpoints, Enumerable.Empty<IEndpoint>()))
 					{
-						if (String.Equals(endpointUrl[i], requestUrl[i]))
+						Error.ErrorPageResponse(HttpStatus.NotImplemented, ref response);
+						continue;
+					}
+
+					// Check if content is empty
+					if (request.HttpMethod == Method.POST.ToString() && request.ContentLength64 == 0)
+					{
+						Error.ErrorPageResponse(HttpStatus.BadRequest, ref response);
+						Internals.WriteLine("Content body is empty: aborting");
+						response.Close();
+						continue;
+					}
+
+					// Endpoint handling
+					foreach (var endpoint in endpoints)
+					{
+						if (request.HttpMethod != endpoint.method.ToString())
 							continue;
 
-						if (dynamicRegex.IsMatch(endpointUrl[i]))
+						// Split URLs into fragments
+						string[] requestUrl = request.Url.AbsolutePath.Trim('/').Split("/");
+						string[] endpointUrl = endpoint.url.Split("/");
+						var urlMatched = true;
+						Dictionary<string, string> parameters = new();
+
+						// Check if requested URL matches static or dynamic endpoint
+						for (var i = 0; i < endpointUrl.Length; i++)
 						{
-							parameters.Add(endpointUrl[i].Trim(':'), requestUrl[i]);
-							continue;
+							if (string.Equals(endpointUrl[i], requestUrl[i]))
+								continue;
+
+							if (dynamicRegex.IsMatch(endpointUrl[i]))
+							{
+								parameters.Add(endpointUrl[i].Trim(':'), requestUrl[i]);
+								continue;
+							}
+
+							if (string.Equals(endpointUrl[i], "{recursive}"))
+								break;
+
+
+							urlMatched = false;
+							break;
 						}
 
-						if (String.Equals(endpointUrl[i], "{recursive}"))
-							break;
-
-
-						urlMatched = false;
-						break;
+						if (urlMatched)
+						{
+							endpoint.Task(ref request, ref response, parameters);
+							requestResolved = true;
+							response.Close();
+						}
 					}
 
-					if (urlMatched)
-					{
-						endpoint.Task(ref request, ref response, parameters);
-						requestResolved = true;
-						response.Close();
-					}
+					// Throw 404 if result is not resolved by any of mounted endpoints
+					if (!requestResolved)
+						Error.ErrorPageResponse(HttpStatus.NotFound, ref response);
 				}
-
-				// Throw 404 if result is not resolved by any of mounted endpoints
-				if (!requestResolved)
-					Utilities.Utilities.Error(HttpStatus.NotFound, ref response);
-			}
-			catch (Exception ex)
-			{
-				SentryWrapper.CaptureException(ex);
-			}			
+				catch (Exception ex)
+				{
+					SentryWrapper.CaptureException(ex);
+				}
 		}
 	}
 }

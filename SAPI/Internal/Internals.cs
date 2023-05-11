@@ -1,27 +1,31 @@
 ﻿using System.Net;
-namespace SAPI;
 
-internal static class Internals
+namespace SAPI.Internal
 {
-	public static Logger access;
-	public static Logger system;
-	public static void PrintRequestInfo(HttpListenerRequest request)
+	internal static class Internals
 	{
-		access.Log(request: request);
+		public static Logger access;
+		public static Logger system;
 
-		if (Config.ReadConfig().Verbose)
+		public static void PrintRequestInfo(HttpListenerRequest request)
 		{
-			Console.WriteLine($"Time: {DateTime.Now}");
-			Console.WriteLine($"URL: {request.Url}");
-			Console.WriteLine($"Method: {request.HttpMethod}");
-			Console.WriteLine($"User IPv4: {request.UserHostAddress}");
-			Console.WriteLine($"User-Agent: {request.UserAgent}");
-			Console.WriteLine("\n");
+			access.Log(request: request);
+
+			if (Config.ReadConfig().Verbose)
+			{
+				Console.WriteLine($"Time: {DateTime.Now}");
+				Console.WriteLine($"URL: {request.Url}");
+				Console.WriteLine($"Method: {request.HttpMethod}");
+				Console.WriteLine($"User IPv4: {request.UserHostAddress}");
+				Console.WriteLine($"User-Agent: {request.UserAgent}");
+				Console.WriteLine("\n");
+			}
 		}
-	}
-	public static void WriteLine(string message)
-	{
-		system.Log(message);
-		Console.WriteLine(message);
+
+		public static void WriteLine(string message)
+		{
+			system.Log(message);
+			Console.WriteLine(message);
+		}
 	}
 }

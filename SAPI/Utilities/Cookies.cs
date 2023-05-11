@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace SAPI.Utilities.Cookies
+namespace SAPI.Utilities
 {
 	public static class Cookies
 	{
@@ -17,7 +17,7 @@ namespace SAPI.Utilities.Cookies
 
 			return cookie != null;
 		}
-		
+
 		/// <summary>
 		/// Give cookie to client
 		/// </summary>

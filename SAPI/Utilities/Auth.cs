@@ -1,11 +1,12 @@
 ﻿using System.Net;
 using System.Text;
+using SAPI.Internal;
 
-namespace SAPI.Utilities.Auth
+namespace SAPI.Utilities
 {
 	public record BasicAuthCredentials(string username, string password);
 
-	public class Auth
+	public static class Auth
 	{
 		/// <summary>
 		/// Checks if user with provided API key exists.
@@ -17,11 +18,9 @@ namespace SAPI.Utilities.Auth
 		{
 			try
 			{
-				foreach (string key in keys)
-				{
+				foreach (var key in keys)
 					if (request.Headers.Get(headerName).Contains(key))
 						return true;
-				}
 
 				return false;
 			}
@@ -44,20 +43,18 @@ namespace SAPI.Utilities.Auth
 				if (request.Headers.Get("Authorization").Contains("Basic "))
 				{
 					// Get data from header end remove "Basic " at the beginning
-					string authData = request.Headers.GetValues("Authorization").GetValue(0).ToString().Substring(6);
+					var authData = request.Headers.GetValues("Authorization").GetValue(0).ToString().Substring(6);
 
 					// Convert from Base64
-					byte[] decodedBase64 = Convert.FromBase64String(authData);
+					var decodedBase64 = Convert.FromBase64String(authData);
 
 					// Encode in UTF-8
 					string[] auth = Encoding.UTF8.GetString(decodedBase64).Split(':');
-					BasicAuthCredentials userCredentials = new BasicAuthCredentials(auth[0], auth[1]);
+					var userCredentials = new BasicAuthCredentials(auth[0], auth[1]);
 
-					foreach (BasicAuthCredentials credentials in credentialsList)
-					{
-						if (String.Equals(userCredentials.username, credentials.username) && String.Equals(userCredentials.password, credentials.password))
+					foreach (var credentials in credentialsList)
+						if (string.Equals(userCredentials.username, credentials.username) && string.Equals(userCredentials.password, credentials.password))
 							return true;
-					}
 				}
 			}
 			catch

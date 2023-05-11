@@ -2,7 +2,6 @@
 using System.Text;
 using SAPI.Endpoints;
 using SAPI.Utilities;
-using SAPI.Utilities.FileUpload;
 
 namespace Testing.Endpoints;
 
@@ -19,6 +18,6 @@ public class Upload : IEndpoint
 		}, ref request);
 
 
-		Utilities.Error(HttpStatus.NotAcceptable, ref response);
+		Error.ErrorPageResponse(HttpStatus.NotAcceptable, ref response);
 	}
 }
