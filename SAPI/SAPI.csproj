@@ -10,16 +10,16 @@
         <Copyright>Copyright © Maciejowski 2022-2023</Copyright>
         <PackageLicenseUrl>https://github.com/Maciejowski2006/SAPI/blob/master/LICENSE.md</PackageLicenseUrl>
         <RepositoryUrl>https://github.com/Maciejowski2006/SAPI</RepositoryUrl>
-        <PackageVersion>9.0.0</PackageVersion>
+        <PackageVersion>9.1.0</PackageVersion>
         <LangVersion>11</LangVersion>
         <Authors>Maciejowski</Authors>
     </PropertyGroup>
 
     <ItemGroup>
 
-        <PackageReference Include="File.TypeChecker" Version="4.0.0"/>
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
-        <PackageReference Include="Sentry" Version="3.31.0"/>
+        <PackageReference Include="File.TypeChecker" Version="4.0.0" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageReference Include="Sentry" Version="3.31.0" />
 
     </ItemGroup>
 
