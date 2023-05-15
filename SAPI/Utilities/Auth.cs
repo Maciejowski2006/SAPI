@@ -40,20 +40,10 @@ namespace SAPI.Utilities
 		{
 			try
 			{
-				if (request.Headers.Get("Authorization").Contains("Basic "))
+				if (GetBasicAuthCredentials(out BasicAuthCredentials credentials, ref request))
 				{
-					// Get data from header end remove "Basic " at the beginning
-					var authData = request.Headers.GetValues("Authorization").GetValue(0).ToString().Substring(6);
-
-					// Convert from Base64
-					var decodedBase64 = Convert.FromBase64String(authData);
-
-					// Encode in UTF-8
-					string[] auth = Encoding.UTF8.GetString(decodedBase64).Split(':');
-					var userCredentials = new BasicAuthCredentials(auth[0], auth[1]);
-
-					foreach (var credentials in credentialsList)
-						if (string.Equals(userCredentials.username, credentials.username) && string.Equals(userCredentials.password, credentials.password))
+					foreach (BasicAuthCredentials _credentials in credentialsList)
+						if (string.Equals(_credentials.username, credentials.username) && string.Equals(_credentials.password, credentials.password))
 							return true;
 				}
 			}
@@ -63,6 +53,34 @@ namespace SAPI.Utilities
 			}
 
 			return false;
+		}
+
+		/// <summary>
+		/// Returns Basic auth credentials.
+		/// </summary>
+		/// <param name="credentials">Variable contains passed user credentials</param>
+		/// <param name="request">Pass from Task()</param>
+		public static bool GetBasicAuthCredentials(out BasicAuthCredentials? credentials, ref HttpListenerRequest request)
+		{
+			credentials = null;
+			try
+			{
+				if (request.Headers.Get("Authorization").Contains("Basic "))
+				{
+					string authData = request.Headers.GetValues("Authorization").GetValue(0).ToString().Substring(6);
+					
+					byte[] decodedBase64 = Convert.FromBase64String(authData);
+					
+					string[] auth = Encoding.UTF8.GetString(decodedBase64).Split(':');
+					credentials = new (auth[0], auth[1]);
+				}
+				
+				return true;
+			}
+			catch
+			{
+				return false;
+			}
 		}
 	}
 }
