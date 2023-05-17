@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Text;
+using SAPI;
 using SAPI.Endpoints;
 using SAPI.Utilities;
 

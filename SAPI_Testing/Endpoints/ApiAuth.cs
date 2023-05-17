@@ -7,10 +7,9 @@ namespace Testing.Endpoints;
 
 public class ApiAuth : IEndpoint
 {
-
 	public string url { get; } = "auth";
-	public Method method { get; } = Method.GET;
-	public void Task(ref HttpListenerRequest request, ref HttpListenerResponse response, Dictionary<string, string> parameters)
+
+	public void Get(ref Packet packet)
 	{
 		List<BasicAuthCredentials> credentials = new ()
 		{
@@ -26,8 +25,8 @@ public class ApiAuth : IEndpoint
 			"bfasd5"
 		};
 
-		bool keyAuth = Auth.CheckForKey(keys, "x-api-key", ref request);
-		bool userPassAuth = Auth.CheckForUserPass(credentials, ref request);
+		bool keyAuth = Auth.CheckForKey(keys, "x-api-key", ref packet);
+		bool userPassAuth = Auth.CheckForUserPass(credentials, ref packet);
 		
 		Console.WriteLine($"Key Auth: {keyAuth}");
 		Console.WriteLine($"User+Password Auth: {userPassAuth}");
