@@ -62,7 +62,7 @@ namespace SAPI
 		{
 			Internals.WriteLine("Mounted endpoints:");
 			foreach (var endpoint in endpoints)
-				Internals.WriteLine($"{endpoint.method} {endpoint.url}");
+				Internals.WriteLine($"{endpoint.url}");
 
 			listener.Start();
 			Internals.WriteLine($"Listening for connections on {url}");
@@ -109,9 +109,6 @@ namespace SAPI
 					// Endpoint handling
 					foreach (var endpoint in endpoints)
 					{
-						if (request.HttpMethod != endpoint.method.ToString())
-							continue;
-
 						// Split URLs into fragments
 						string[] requestUrl = request.Url.AbsolutePath.Trim('/').Split("/");
 						string[] endpointUrl = endpoint.url.Split("/");
