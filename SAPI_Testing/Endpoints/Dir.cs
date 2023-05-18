@@ -7,13 +7,12 @@ namespace Testing.Endpoints
 {
 	public class Dir : IEndpoint
 	{
-		public string url { get; } = "dir/:file/";
-		public Method method { get; } = Method.GET;
-		public void Task(ref HttpListenerRequest request, ref HttpListenerResponse response, Dictionary<string, string> parameters)
+		public string url { get; } = "dir/:file";
+		public void Get(ref Packet packet)
 		{
 			string path = Path.Combine(Directory.GetCurrentDirectory(), "public");
 
-			StaticContent.HostDirectory(path, parameters, ref response);
+			StaticContent.HostDirectory(path, ref packet);
 		}
 		
 	}
