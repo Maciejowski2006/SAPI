@@ -1,5 +1,4 @@
-﻿using System.Net;
-using SAPI;
+﻿using SAPI;
 using SAPI.Endpoints;
 using SAPI.Utilities;
 
@@ -10,14 +9,13 @@ public class DynamicGet : IEndpoint
     record Data(string id, string name);
 
 	public string url { get; } = "dynamic/:id/test/:name";
-	public Method method { get; } = Method.GET;
-	public void Task(ref HttpListenerRequest request, ref HttpListenerResponse response, Dictionary<string, string> parameters)
+	public void Get(ref Packet packet)
 	{
-		Console.WriteLine(parameters["id"]);
-		Console.WriteLine(parameters["name"]);
+		Console.WriteLine(packet.Paramters["id"]);
+		Console.WriteLine(packet.Paramters["name"]);
 
-		Data data = new(parameters["id"], parameters["name"]);
+		Data data = new(packet.Paramters["id"], packet.Paramters["name"]);
 		
-		Json.Response(data, ref response);
+		Json.Response(data, ref packet);
 	}
 }

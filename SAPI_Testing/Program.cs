@@ -8,7 +8,6 @@ public class SAPI_Testing
 		Server sapi = new();
 
 		sapi.MountEndpoint(new GetJson());
-		sapi.MountEndpoint(new SendJson());
 		sapi.MountEndpoint(new DynamicGet());
 		sapi.MountEndpoint(new ApiAuth());
 		sapi.MountEndpoint(new Static());
