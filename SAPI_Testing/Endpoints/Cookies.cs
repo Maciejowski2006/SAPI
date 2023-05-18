@@ -8,18 +8,17 @@ namespace Testing.Endpoints
 	public class Cookies : IEndpoint
 	{
 		public string url { get; set; } = "cookies";
-		public Method method { get; set; } = Method.GET;
-		public void Task(ref HttpListenerRequest request, ref HttpListenerResponse response, Dictionary<string, string> parameters)
+		public void Get(ref Packet packet)
 		{
-			if (SAPI.Utilities.Cookies.CheckForCookie("visit", out Cookie cookie, ref request))
+			if (SAPI.Utilities.Cookies.CheckForCookie("visit", out Cookie cookie, ref packet))
 			{
-				SAPI.Utilities.Cookies.GiveCookie("visit", "false", ref response);
-				Error.ErrorPageResponse(HttpStatus.OK, ref response);
+				SAPI.Utilities.Cookies.GiveCookie("visit", "false", ref packet);
+				Error.ErrorPageResponse(HttpStatus.OK, ref packet);
 			}
 			else
 			{
-				SAPI.Utilities.Cookies.GiveCookie("visit", "true", ref response);
-				Error.ErrorPageResponse(HttpStatus.Forbidden, ref response);
+				SAPI.Utilities.Cookies.GiveCookie("visit", "true", ref packet);
+				Error.ErrorPageResponse(HttpStatus.Forbidden, ref packet);
 			}
 		}
 	}
