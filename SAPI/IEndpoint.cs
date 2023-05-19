@@ -1,20 +1,12 @@
 ﻿using System.Net;
-using SAPI.LLAPI.Utilities;
-using SAPI.Utilities;
 
-namespace SAPI.Endpoints
+namespace SAPI
 {
 	public interface IEndpoint
 	{
 		string url { get; }
 
-		/// <summary>
-		/// In task you execute code to satisfy the request
-		/// </summary>
-		/// <param name="request">Request info from server</param>
-		/// <param name="response">Response is used to communicate to client</param>
-		/// <param name="parameters">List of parameters provided from dynamic endpoint</param>
-		public void Task(ref HttpListenerRequest request, ref HttpListenerResponse response, Dictionary<string, string> parameters)
+		public sealed void Task(ref HttpListenerRequest request, ref HttpListenerResponse response, Dictionary<string, string> parameters)
 		{
 			Packet packet = new(ref request, ref response, parameters);
 			Method method = Enum.Parse<Method>(request.HttpMethod);
@@ -22,61 +14,74 @@ namespace SAPI.Endpoints
 			{
 				case Method.GET:
 				{
-					Get(ref packet);
+					Get(ref packet, Get);
 					break;
 				}
 				case Method.POST:
 				{
-					Post(ref packet);
+					Post(ref packet, Post);
 					break;
 				}
 				case Method.PUT:
 				{
-					Put(ref packet);
+					Put(ref packet, Put);
 					break;
 				}
 				case Method.PATCH:
 				{
-					Patch(ref packet);
+					Patch(ref packet, Patch);
 					break;
 				}
 				case Method.DELETE:
 				{
-					Delete(ref packet);
+					Delete(ref packet, Delete);
 					break;
 				}
 				case Method.OPTIONS:
 				{
-					Options(ref packet);
+					Options(ref packet, new CorsOptions(), Options);
 					break;
 				}
 				case Method.HEAD:
 				{
-					Head(ref packet);
+					Head(ref packet, Head);
 					break;
 				}
 			}
 		}
 
-		protected virtual void Get(ref Packet packet)
+		public delegate void BaseGet(ref Packet packet, BaseGet baseMethod = null);
+		protected void Get(ref Packet packet, BaseGet baseMethod)
 		{
 		}
-		protected virtual void Post(ref Packet packet)
+
+		public delegate void BasePost(ref Packet packet, BasePost baseMethod = null);
+		protected void Post(ref Packet packet, BasePost baseMethod)
 		{
 		}
-		protected virtual void Put(ref Packet packet)
+
+		public delegate void BasePut(ref Packet packet, BasePut baseMethod = null);
+		protected void Put(ref Packet packet, BasePut baseMethod)
 		{
 		}
-		protected virtual void Patch(ref Packet packet)
+
+		public delegate void BasePatch(ref Packet packet, BasePatch baseMethod = null);
+		protected void Patch(ref Packet packet, BasePatch baseMethod)
 		{
 		}
-		protected virtual void Delete(ref Packet packet)
+
+		public delegate void BaseDelete(ref Packet packet, BaseDelete methodBase);
+		protected void Delete(ref Packet packet, BaseDelete baseMethod)
 		{
 		}
-		protected virtual void Options(ref Packet packet)
+
+		public delegate void BaseOptions(ref Packet packet, CorsOptions corsOptions, BaseOptions baseMethod = null);
+		protected void Options(ref Packet packet, CorsOptions corsOptions, BaseOptions baseMethod)
 		{
 		}
-		protected virtual void Head(ref Packet packet)
+
+		public delegate void BaseHead(ref Packet packet, BaseHead baseMethod = null);
+		protected void Head(ref Packet packet, BaseHead baseMethod)
 		{
 		}
 	}
