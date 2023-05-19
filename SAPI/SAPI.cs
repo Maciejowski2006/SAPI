@@ -73,9 +73,7 @@ namespace SAPI
 
 			listener.Close();
 		}
-
-		public void MountEndpoint(IEndpoint endpoint) => endpoints.Add(endpoint);
-
+		
 		private static async Task ConnectionHandler()
 		{
 			while (true)
