@@ -1,6 +1,4 @@
-﻿using SAPI.Endpoints;
-
-namespace SAPI.LLAPI
+﻿namespace SAPI.LLAPI
 {
 	internal static class EndpointManager
 	{

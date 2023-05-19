@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using System.Text.RegularExpressions;
-using SAPI.Endpoints;
 using SAPI.Internal;
 using SAPI.LLAPI;
 using SAPI.Utilities;
