@@ -31,10 +31,11 @@ namespace SAPI
 			Config.Init();
 			url = Config.ReadConfig().Url;
 
-
+			
 			listener = new HttpListener();
 			listener.Prefixes.Add(url);
 			endpoints = new List<IEndpoint>();
+			EndpointManager.FindAndMount(ref endpoints);
 		}
 
 		/// <summary>
@@ -73,10 +74,7 @@ namespace SAPI
 			listener.Close();
 		}
 
-		public void MountEndpoint(IEndpoint endpoint)
-		{
-			endpoints.Add(endpoint);
-		}
+		public void MountEndpoint(IEndpoint endpoint) => endpoints.Add(endpoint);
 
 		private static async Task ConnectionHandler()
 		{
