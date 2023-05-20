@@ -86,16 +86,16 @@ namespace SAPI
 					Internals.PrintRequestInfo(request);
 
 					// Check if path is mapped to any endpoint
-					if (Equals(endpoints, Enumerable.Empty<IEndpoint>()))
+					if (Equals(endpoints, Enumerable.Empty<Endpoint>()))
 					{
-						Error.ErrorPageResponse(HttpStatus.NotImplemented, ref response);
+						LLAPI.Utilities.Error.ErrorPageResponse(HttpStatus.NotImplemented, ref request, ref response);
 						continue;
 					}
 
 					// Check if content is empty
 					if (request.HttpMethod == Method.POST.ToString() && request.ContentLength64 == 0)
 					{
-						Error.ErrorPageResponse(HttpStatus.BadRequest, ref response);
+						LLAPI.Utilities.Error.ErrorPageResponse(HttpStatus.BadRequest, ref request, ref response);
 						Internals.WriteLine("Content body is empty: aborting");
 						response.Close();
 						continue;
@@ -140,7 +140,7 @@ namespace SAPI
 
 					// Throw 404 if result is not resolved by any of mounted endpoints
 					if (!requestResolved)
-						Error.ErrorPageResponse(HttpStatus.NotFound, ref response);
+						LLAPI.Utilities.Error.ErrorPageResponse(HttpStatus.NotFound, ref request, ref response);
 				}
 				catch (Exception ex)
 				{
