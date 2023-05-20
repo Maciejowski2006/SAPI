@@ -3,11 +3,11 @@ using SAPI.Utilities;
 
 namespace Testing.Endpoints;
 
-public class ApiAuth : IEndpoint
+public class ApiAuth : Endpoint
 {
-	public string url { get; } = "auth";
+	public override string url { get; } = "auth";
 
-	public void Get(ref Packet packet)
+	protected override void Get(ref Packet packet)
 	{
 		List<BasicAuthCredentials> credentials = new ()
 		{
