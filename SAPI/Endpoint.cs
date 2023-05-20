@@ -72,6 +72,7 @@ namespace SAPI
 
 		protected virtual void Options(ref Packet packet, CorsOptions corsOptions)
 		{
+			// TODO: Implement CORS (adding headers)
 		}
 
 		protected virtual void Head(ref Packet packet)
