@@ -2,18 +2,18 @@
 
 namespace Testing.Endpoints
 {
-	public class Cors : IEndpoint
+	public class Cors : Endpoint
 	{
-		public string url { get; } = "cors";
+		public override string url { get; } = "cors";
 
-		protected void Options(ref Packet packet, CorsOptions corsOptions, IEndpoint.BaseOptions baseMethod)
+		protected override void Options(ref Packet packet, CorsOptions corsOptions)
 		{
 			corsOptions = new()
 			{
 				AllowOrigin = AccessControlAllowOrigin.ThisOrigin.ToString(),
 			};
 
-			baseMethod(ref packet, corsOptions);
+			base.Options(ref packet, corsOptions);
 		}
 	}
 }

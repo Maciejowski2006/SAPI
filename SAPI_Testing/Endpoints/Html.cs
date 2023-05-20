@@ -2,20 +2,20 @@
 
 namespace Testing.Endpoints
 {
-	public class Html : IEndpoint
+	public class Html : Endpoint
 	{
-		public string url { get; } = "html";
+		public override string url { get; } = "html";
 
-		public void Get(ref Packet packet)
+		protected override void Get(ref Packet packet)
 		{
 			SAPI.LLAPI.Utilities.Html.HtmlResponse("test", ref packet);
 		}
 
-		public void Options(ref Packet packet, CorsOptions corsOptions, IEndpoint.BaseOptions baseMethod)
+		protected override void Options(ref Packet packet, CorsOptions corsOptions)
 		{
 			corsOptions = new CorsBuilder().AllowOrigin(AccessControlAllowOrigin.All).MaxAge(86400).Build();
 
-			baseMethod(ref packet, corsOptions);
+			base.Options(ref packet, corsOptions);
 		}
 	}
 }

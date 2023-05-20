@@ -4,10 +4,10 @@ using SAPI.Utilities;
 
 namespace Testing.Endpoints
 {
-	public class Cookies : IEndpoint
+	public class Cookies : Endpoint
 	{
-		public string url { get; set; } = "cookies";
-		public void Get(ref Packet packet)
+		public override string url { get; } = "cookies";
+		protected override void Get(ref Packet packet)
 		{
 			if (SAPI.Utilities.Cookies.CheckForCookie("visit", out Cookie cookie, ref packet))
 			{

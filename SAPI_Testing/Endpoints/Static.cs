@@ -3,10 +3,10 @@ using SAPI.Utilities;
 
 namespace Testing.Endpoints
 {
-	public class Static : IEndpoint
+	public class Static : Endpoint
 	{
-		public string url { get; } = "static";
-		public void Get(ref Packet packet)
+		public override string url { get; } = "static";
+		protected override void Get(ref Packet packet)
 		{
 			string file = Path.Combine(Directory.GetCurrentDirectory(), "linus.mov");
 			

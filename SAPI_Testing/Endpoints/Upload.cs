@@ -3,10 +3,11 @@ using SAPI.Utilities;
 
 namespace Testing.Endpoints;
 
-public class Upload : IEndpoint
+public class Upload : Endpoint
 {
-	public string url { get; } = "upload";
-	public void Post(ref Packet packet)
+	public override string url { get; } = "upload";
+
+	protected override void Post(ref Packet packet)
 	{
 		FileUpload.SaveFile(Environment.CurrentDirectory, FileUpload.FileNamingSchemes.GUID, ref packet);
 

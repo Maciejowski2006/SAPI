@@ -3,10 +3,10 @@ using SAPI.Utilities;
 
 namespace Testing.Endpoints
 {
-	public class Dir : IEndpoint
+	public class Dir : Endpoint
 	{
-		public string url { get; } = "dir/:file";
-		public void Get(ref Packet packet)
+		public override string url { get; } = "dir/:file";
+		protected override void Get(ref Packet packet)
 		{
 			string path = Path.Combine(Directory.GetCurrentDirectory(), "public");
 

@@ -3,12 +3,12 @@ using SAPI.Utilities;
 
 namespace Testing.Endpoints;
 
-public class DynamicGet : IEndpoint
+public class DynamicGet : Endpoint
 {
     record Data(string id, string name);
 
-	public string url { get; } = "dynamic/:id/test/:name";
-	public void Get(ref Packet packet)
+	public override string url { get; } = "dynamic/:id/test/:name";
+	protected override void Get(ref Packet packet)
 	{
 		Console.WriteLine(packet.Paramters["id"]);
 		Console.WriteLine(packet.Paramters["name"]);

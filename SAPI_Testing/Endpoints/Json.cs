@@ -4,17 +4,17 @@ using SAPI.Utilities;
 namespace Testing.Endpoints;
 
 record DataModel(int id, string message); 
-public class GetJson : IEndpoint
+public class GetJson : Endpoint
 {
-	public string url { get; } = "json";
-	public void Get(ref Packet packet)
+	public override string url { get; } = "json";
+	protected override void Get(ref Packet packet)
 	{
 		DataModel model = new(14, "Hello, World!");
 		
 		Json.Response(model, ref packet);
 	}
 
-	public void Post(ref Packet packet)
+	protected override void Post(ref Packet packet)
 	{
 		Json.Fetch(out DataModel model, ref packet);
 		
