@@ -1,5 +1,4 @@
-﻿using System.Net;
-using System.Text;
+﻿using System.Text;
 using FileTypeChecker.Abstracts;
 using FileTypeChecker;
 using SAPI.Internal;
@@ -18,73 +17,6 @@ namespace SAPI.Utilities
 			GUID,
 			Timestamp,
 			DateTime
-		}
-
-		/// TODO: Remove this method after rewrite
-		/// <summary>
-		/// Saves file from request to specified location.
-		/// </summary>
-		/// <param name="path">Path to which file should be saved in</param>
-		/// <param name="namingScheme">Naming scheme which file will follow</param>
-		/// <param name="request">Pass from Task()</param>
-		/// <returns>Path to file</returns>
-		public static string SaveFile(string path, FileNamingSchemes namingScheme, ref HttpListenerRequest request)
-		{
-			SaveFileImpl(request.ContentEncoding, GetBoundary(request.ContentType), request.InputStream);
-
-			switch (namingScheme)
-			{
-				case FileNamingSchemes.GUID:
-				{
-					fileName = Guid.NewGuid().ToString();
-					fileName += DetermineFileExtension(tempFile);
-
-					break;
-				}
-				case FileNamingSchemes.Timestamp:
-				{
-					fileName = Convert.ToString((UInt64)DateTime.Now.AddMilliseconds(2).Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds);
-					fileName += DetermineFileExtension(tempFile);
-
-					break;
-				}
-				case FileNamingSchemes.DateTime:
-				{
-					DateTime dt = DateTime.Now.AddMilliseconds(2);
-
-					fileName = $"{dt.Day}-{dt.Month}-{dt.Year}_{dt.Hour}.{dt.Minute}.{dt.Second}.{dt.Millisecond}";
-					fileName += DetermineFileExtension(tempFile);
-
-					break;
-				}
-			}
-
-			string finalPath = Path.Combine(path, fileName);
-
-			File.Copy(tempFile, finalPath);
-			File.Delete(tempFile);
-			return finalPath;
-		}
-
-		/// TODO: Remove this method after rewrite
-		/// <summary>
-		/// Saves file from request to specified location.
-		/// </summary>
-		/// <param name="path">Path to which file should be saved in</param>
-		/// <param name="customFileNameHandler">Custom handler(method) for naming files -> return string(with extension)</param>
-		/// <param name="request">Pass from Task()</param>
-		/// <returns>Path to file</returns>
-		public static string SaveFile(string path, CustomFileNameHandler customFileNameHandler, ref HttpListenerRequest request)
-		{
-			SaveFileImpl(request.ContentEncoding, GetBoundary(request.ContentType), request.InputStream);
-
-			fileName = customFileNameHandler(tempFile);
-
-			string finalPath = Path.Combine(path, fileName);
-
-			File.Copy(tempFile, finalPath);
-			File.Delete(tempFile);
-			return finalPath;
 		}
 
 		/// <summary>

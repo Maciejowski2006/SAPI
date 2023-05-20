@@ -1,5 +1,4 @@
-﻿using System.Net;
-using SAPI.LLAPI.Utilities;
+﻿using SAPI.LLAPI.Utilities;
 
 // Disable warnings about using obsolete methods
 #pragma warning disable CS0618
@@ -39,40 +38,6 @@ namespace SAPI.Utilities
 			{ HttpStatus.BadGateway, 502 },
 			{ HttpStatus.ServiceUnavailable, 503 }
 		};
-
-		/// TODO: Remove this method after rewrite
-		/// <summary>
-		/// Shows an error page.
-		/// </summary>
-		/// <param name="httpStatus">It's the status code send to client</param>
-		/// <param name="response">Response ref you got from server - argument in Task()</param>
-		public static void ErrorPageResponse(HttpStatus httpStatus, ref HttpListenerResponse response)
-		{
-			var statusName = httpStatusNames[httpStatus];
-			var statusCode = httpStatusCodes[httpStatus];
-
-			var page =
-				"<!DOCTYPE>" +
-				"<html>" +
-				"	<head>" +
-				$"		<title>{statusCode} Error!</title>" +
-				"		<style>" +
-				"			h1, h3 {" +
-				"				text-align: center;" +
-				"				margin-block: 1.5rem;" +
-				"				font-weight: 600;" +
-				"			}" +
-				"		</style>" +
-				"	</head>" +
-				"	<body>" +
-				$"		<h1>{statusCode} {statusName}</h1>" +
-				"		<hr>" +
-				"		<h3>SAPI</h3>" +
-				"	</body>" +
-				"</html>";
-
-			Html.HtmlResponse(page, ref response, statusCode);
-		}
 		
 		/// <summary>
 		/// Shows an error page.
@@ -81,10 +46,10 @@ namespace SAPI.Utilities
 		/// <param name="response">Response ref you got from server - argument in Task()</param>
 		public static void ErrorPageResponse(HttpStatus httpStatus, ref Packet packet)
 		{
-			var statusName = httpStatusNames[httpStatus];
-			var statusCode = httpStatusCodes[httpStatus];
+			string statusName = httpStatusNames[httpStatus];
+			int statusCode = httpStatusCodes[httpStatus];
 
-			var page =
+			string page =
 				"<!DOCTYPE>" +
 				"<html>" +
 				"	<head>" +
