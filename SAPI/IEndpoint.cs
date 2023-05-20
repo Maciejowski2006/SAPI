@@ -2,6 +2,7 @@
 
 namespace SAPI
 {
+	[Obsolete("Use Endpoint class instead")]
 	public interface IEndpoint
 	{
 		string url { get; }

@@ -12,7 +12,7 @@ namespace SAPI
 		private static HttpListener listener;
 		private string url;
 		private static bool requestResolved;
-		private static List<IEndpoint> endpoints;
+		private static List<Endpoint> endpoints;
 		private static Regex dynamicRegex = new(":(.+?)(?:(?=/)|$)", RegexOptions.Compiled);
 
 		/// <summary>
@@ -33,7 +33,7 @@ namespace SAPI
 			
 			listener = new HttpListener();
 			listener.Prefixes.Add(url);
-			endpoints = new List<IEndpoint>();
+			endpoints = new List<Endpoint>();
 			EndpointManager.FindAndMount(ref endpoints);
 		}
 
