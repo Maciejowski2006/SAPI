@@ -124,8 +124,7 @@ namespace SAPI
 
 							if (string.Equals(endpointUrl[i], "{recursive}"))
 								break;
-
-
+							
 							urlMatched = false;
 							break;
 						}
