@@ -1,17 +1,15 @@
-﻿using System.Net;
-using SAPI.Endpoints;
+﻿using SAPI;
 using SAPI.Utilities;
 using ServerAPI.Services;
 using Server = ServerAPI.Models.Server;
 namespace ServerAPI.Endpoints;
 
-public class GetServers : IEndpoint
+public class GetServers : Endpoint
 {
-	public string url { get; } = "get-servers";
-	public Method method { get; } = Method.GET;
-	public void Task(ref HttpListenerRequest request, ref HttpListenerResponse response, Dictionary<string, string> parameters)
+	public override string url { get; } = "get-servers";
+	protected override void Get(ref Packet packet)
 	{
 		List<Server> servers = Database.GetServers();
-		Json.Response(servers, ref response);
+		Json.Response(servers, ref packet);
 	}
 }
