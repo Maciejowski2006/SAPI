@@ -1,4 +1,5 @@
 ﻿using SAPI;
+using SAPI.API.Utilities;
 
 namespace Testing.Endpoints
 {
@@ -6,14 +7,11 @@ namespace Testing.Endpoints
 	{
 		public override string url { get; } = "cors";
 
-		protected override void Options(ref Packet packet, CorsOptions corsOptions)
+		protected override void Options(ref Packet packet, CorsOptions cors)
 		{
-			corsOptions = new()
-			{
-				AllowOrigin = AccessControlAllowOrigin.ThisOrigin.ToString(),
-			};
+			cors = new CorsBuilder().AllowOrigin(AccessControlAllowOrigin.ThisOrigin).Build();
 
-			base.Options(ref packet, corsOptions);
+			base.Options(ref packet, cors);
 		}
 	}
 }

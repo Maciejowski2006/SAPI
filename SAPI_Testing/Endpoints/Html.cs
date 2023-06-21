@@ -11,11 +11,11 @@ namespace Testing.Endpoints
 			SAPI.LLAPI.Utilities.Html.HtmlResponse("test", ref packet);
 		}
 
-		protected override void Options(ref Packet packet, CorsOptions corsOptions)
+		protected override void Options(ref Packet packet, CorsOptions cors)
 		{
-			corsOptions = new CorsBuilder().AllowOrigin(AccessControlAllowOrigin.All).MaxAge(86400).Build();
+			cors = new CorsBuilder().AllowOrigin(AccessControlAllowOrigin.All).MaxAge(86400).Build();
 
-			base.Options(ref packet, corsOptions);
+			base.Options(ref packet, cors);
 		}
 	}
 }
