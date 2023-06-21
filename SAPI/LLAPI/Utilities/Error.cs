@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using SAPI.Utilities;
+using SAPI.API.Utilities;
 
 // Disable warnings about using obsolete methods
 #pragma warning disable CS0618
@@ -16,7 +16,7 @@ namespace SAPI.LLAPI.Utilities
 		public static void ErrorPageResponse(HttpStatus httpStatus, ref HttpListenerRequest request, ref HttpListenerResponse response)
 		{
 			Packet packet = new(ref request, ref response, null);
-			SAPI.Utilities.Error.ErrorPageResponse(httpStatus, ref packet);
+			API.Utilities.Error.ErrorPageResponse(httpStatus, ref packet);
 		}
 	}
 }

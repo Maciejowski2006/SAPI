@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using  SAPI.LLAPI;
 
 namespace SAPI
 {
@@ -6,7 +7,6 @@ namespace SAPI
 	{
 		private static string dataFolder;
 		private static string configFile;
-		public static Logger system;
 
 		public static void Init()
 		{
@@ -29,7 +29,7 @@ namespace SAPI
 			ConfigFile defaultConfig = new();
 			if (update)
 			{
-				system.Log("Old config file detected: updating, while keeping old settings");
+				Debug.Warn("Old config file detected: updating, while keeping old settings");
 
 				var oldConfig = ReadConfig();
 

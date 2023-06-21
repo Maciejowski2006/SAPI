@@ -1,8 +1,8 @@
 ﻿using System.Net;
-using SAPI.Internal;
 using SAPI.LLAPI;
+using Debug = SAPI.API.Debug;
 
-namespace SAPI.Utilities
+namespace SAPI.API.Utilities
 {
 	public class StaticContent
 	{
@@ -123,7 +123,7 @@ namespace SAPI.Utilities
 			}
 			catch (Exception e)
 			{
-				Internals.WriteLine($"Error: {e}");
+				Debug.Log($"Error: {e}");
 				Error.ErrorPageResponse(HttpStatus.NotFound, ref packet);
 			}
 		}
@@ -151,7 +151,7 @@ namespace SAPI.Utilities
 			}
 			catch (DirectoryNotFoundException e)
 			{
-				Internals.WriteLine($"File not found in directory. Error: {e}");
+				Debug.Log($"File not found in directory. Error: {e}");
 			}
 			catch (Exception e)
 			{

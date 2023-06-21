@@ -1,15 +1,13 @@
 ﻿using System.Net;
+using Debug = SAPI.LLAPI.Debug;
 
 namespace SAPI.Internal
 {
 	internal static class Internals
 	{
-		public static Logger access;
-		public static Logger system;
-
 		public static void PrintRequestInfo(HttpListenerRequest request)
 		{
-			access.Log(request: request);
+			Debug.Log(request);
 
 			if (Config.ReadConfig().Verbose)
 			{
@@ -20,12 +18,6 @@ namespace SAPI.Internal
 				Console.WriteLine($"User-Agent: {request.UserAgent}");
 				Console.WriteLine("\n");
 			}
-		}
-
-		public static void WriteLine(string message)
-		{
-			system.Log(message);
-			Console.WriteLine(message);
 		}
 	}
 }

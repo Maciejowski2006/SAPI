@@ -3,7 +3,7 @@
 // Disable warnings about using obsolete methods
 #pragma warning disable CS0618
 
-namespace SAPI.Utilities
+namespace SAPI.API.Utilities
 {
 	public static class Error
 	{

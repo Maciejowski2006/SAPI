@@ -1,4 +1,4 @@
-﻿namespace SAPI.Utilities
+﻿namespace SAPI.API.Utilities
 {
 	public enum HttpStatus
 	{

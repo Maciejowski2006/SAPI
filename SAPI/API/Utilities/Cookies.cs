@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace SAPI.Utilities
+namespace SAPI.API.Utilities
 {
 	public static class Cookies
 	{

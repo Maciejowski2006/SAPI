@@ -1,9 +1,8 @@
 ﻿using System.Text;
-using FileTypeChecker.Abstracts;
 using FileTypeChecker;
-using SAPI.Internal;
+using FileTypeChecker.Abstracts;
 
-namespace SAPI.Utilities
+namespace SAPI.API.Utilities
 {
 	public class FileUpload
 	{
@@ -116,7 +115,7 @@ namespace SAPI.Utilities
 				while (true)
 				{
 					if (len == 0)
-						Internals.WriteLine("Start boundary not found");
+						Debug.Log("Start boundary not found. Probably file was not sent alongside the request.");
 
 
 					startPos = IndexOf(buffer, len, boundaryBytes);
@@ -133,7 +132,7 @@ namespace SAPI.Utilities
 					while (true)
 					{
 						if (len == 0)
-							Internals.WriteLine("Preamble not found");
+							Debug.Log("Preamble not found");
 
 						startPos = Array.IndexOf(buffer, enc.GetBytes("\n")[0], startPos);
 						if (startPos >= 0)
@@ -159,7 +158,7 @@ namespace SAPI.Utilities
 					}
 
 					if (len <= boundaryLen)
-						Internals.WriteLine("End boundary not found");
+						Debug.Log("End boundary not found");
 					else
 					{
 						output.Write(buffer, 0, len - boundaryLen);

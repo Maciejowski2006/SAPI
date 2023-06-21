@@ -1,9 +1,10 @@
 ﻿using System.Net;
 using System.Text.RegularExpressions;
+using SAPI.API.Utilities;
 using SAPI.Internal;
 using SAPI.LLAPI;
-using SAPI.Utilities;
 using Sentry;
+using Debug = SAPI.LLAPI.Debug;
 
 namespace SAPI
 {
@@ -21,11 +22,7 @@ namespace SAPI
 		/// <param name="url">Sets custom url - remember to put "/" at the end. If no parameter is provided, SAPI starts on default address</param>
 		public Server()
 		{
-			Logger logAccess = new("access", Logger.LogType.Access);
-			Logger logSystem = new("system", Logger.LogType.System);
-			Internals.access = logAccess;
-			Internals.system = logSystem;
-			Config.system = logSystem;
+			Debug.Init();
 
 			Config.Init();
 			url = Config.ReadConfig().Url;
@@ -51,7 +48,8 @@ namespace SAPI
 					       o.IsGlobalModeEnabled = true;
 				       }))
 				{
-					Internals.WriteLine("Sentry initialized");
+					
+					Debug.Log("Sentry initialized");
 					StartImpl();
 				}
 			else
@@ -60,12 +58,12 @@ namespace SAPI
 
 		private void StartImpl()
 		{
-			Internals.WriteLine("Mounted endpoints:");
+			Debug.Log("Mounted endpoints:");
 			foreach (var endpoint in endpoints)
-				Internals.WriteLine($"{endpoint.url}");
+				Debug.Log($"{endpoint.url}");
 
 			listener.Start();
-			Internals.WriteLine($"Listening for connections on {url}");
+			Debug.Log($"Listening for connections on {url}");
 
 			var connectionHandler = ConnectionHandler();
 			connectionHandler.GetAwaiter().GetResult();
@@ -91,12 +89,12 @@ namespace SAPI
 						LLAPI.Utilities.Error.ErrorPageResponse(HttpStatus.NotImplemented, ref request, ref response);
 						continue;
 					}
-
+					
 					// Check if content is empty
 					if (request.HttpMethod == Method.POST.ToString() && request.ContentLength64 == 0)
 					{
 						LLAPI.Utilities.Error.ErrorPageResponse(HttpStatus.BadRequest, ref request, ref response);
-						Internals.WriteLine("Content body is empty: aborting");
+						Debug.Warn("Content body is empty: aborting");
 						response.Close();
 						continue;
 					}

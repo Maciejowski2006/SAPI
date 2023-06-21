@@ -1,7 +1,6 @@
 ﻿using System.Text;
-using SAPI.Internal;
 
-namespace SAPI.Utilities
+namespace SAPI.API.Utilities
 {
 	public record BasicAuthCredentials(string username, string password);
 
@@ -29,7 +28,7 @@ namespace SAPI.Utilities
 				return false;
 			}
 		}
-		
+
 		/// TODO: Doesn't work - investigate
 		/// <summary>
 		/// Checks if user with provided credentials exists.
@@ -49,7 +48,7 @@ namespace SAPI.Utilities
 			}
 			catch
 			{
-				Internals.WriteLine($"Request does not have Authorization header.");
+				Debug.Log("Request does not have Authorization header.");
 			}
 
 			return false;
@@ -68,19 +67,21 @@ namespace SAPI.Utilities
 				if (packet.Request.Headers.Get("Authorization").Contains("Basic "))
 				{
 					string authData = packet.Request.Headers.GetValues("Authorization").GetValue(0).ToString().Substring(6);
-					
+
 					byte[] decodedBase64 = Convert.FromBase64String(authData);
-					
+
 					string[] auth = Encoding.UTF8.GetString(decodedBase64).Split(':');
-					credentials = new (auth[0], auth[1]);
+					credentials = new(auth[0], auth[1]);
 				}
-				
+
 				return true;
 			}
 			catch
 			{
-				return false;
+				Debug.Log("Request does not have Authorization header.");
 			}
+
+			return false;
 		}
 	}
 }

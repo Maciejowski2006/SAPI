@@ -1,5 +1,5 @@
 ﻿using SAPI;
-using SAPI.Utilities;
+using SAPI.API.Utilities;
 
 namespace Testing.Endpoints;
 
@@ -15,7 +15,7 @@ public class ApiAuth : Endpoint
 			new BasicAuthCredentials("other", "inny"),
 			
 		};
-	
+
 		List<string> keys = new()
 		{
 			"b4a4bc584acbd4",

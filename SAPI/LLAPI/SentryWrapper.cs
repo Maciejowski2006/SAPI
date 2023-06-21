@@ -9,7 +9,7 @@ namespace SAPI.LLAPI
 			if (Config.ReadConfig().EnableErrorReporting)
 				SentrySdk.CaptureException(e);
 
-			Console.WriteLine($"Exception: {e}");
+			Debug.Error($"Exception: {e}");
 		}
 	}
 }

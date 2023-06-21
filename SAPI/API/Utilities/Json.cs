@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using Newtonsoft.Json;
 
-namespace SAPI.Utilities
+namespace SAPI.API.Utilities
 {
 	public class Json
 	{
