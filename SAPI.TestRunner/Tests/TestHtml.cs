@@ -5,7 +5,7 @@ namespace SAPI.TestRunner
 	public class TestHtml
 	{
 		[Fact]
-		public async void Html_Get_ShouldBe_OK()
+		public async void Html_GET_ShouldBe_OK()
 		{
 			using HttpClient client = new();
 
@@ -14,7 +14,7 @@ namespace SAPI.TestRunner
 			response.StatusCode.Should().Be(HttpStatusCode.OK);
 		}
 		[Fact]
-		public async void Html_Options_ShouldHave_CorsHeaders()
+		public async void Html_OPTIONS_ShouldHave_CorsHeaders()
 		{
 			using HttpClient client = new();
 
