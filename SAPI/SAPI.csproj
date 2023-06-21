@@ -19,7 +19,7 @@
 
         <PackageReference Include="File.TypeChecker" Version="4.0.0" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-        <PackageReference Include="Sentry" Version="3.32.0" />
+        <PackageReference Include="Sentry" Version="3.33.1" />
 
     </ItemGroup>
 
