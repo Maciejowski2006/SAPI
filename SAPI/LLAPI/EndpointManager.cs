@@ -1,4 +1,5 @@
-﻿
+﻿using System.Reflection;
+
 namespace SAPI.LLAPI
 {
 	internal static class EndpointManager
@@ -16,6 +17,20 @@ namespace SAPI.LLAPI
 
 				endpoints.Add(endpoint);
 			}
+		}
+
+		public static string GetDefinedMethods(Type endpoint)
+		{
+			string[] methods = { "Get", "Post", "Put", "Patch", "Delete" };
+			List<string> definedMethods = new();
+
+			foreach (string method in methods)
+			{
+				if (endpoint.GetMember(method, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly).Length != 0)
+					definedMethods.Add(method.ToUpper());
+			}
+
+			return definedMethods.Count > 0 ? $"{String.Join(", ", definedMethods)}, OPTIONS" : "OPTIONS";
 		}
 	}
 }
