@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
+﻿
 namespace SAPI
 {
 	public enum AccessControlAllowOrigin
@@ -11,20 +10,22 @@ namespace SAPI
 	public struct CorsOptions
 	{
 		public string AllowOrigin { get; set; }
-		public bool? AllowCredentials { get; set; }
+		public bool AllowCredentials { get; set; }
 		public uint MaxAge { get; set; }
+		public string[] AllowHeaders { get; set; }
 		
 		public CorsOptions()
 		{
 			AllowOrigin = "*";
-			AllowCredentials = null;
+			AllowCredentials = false;
 			MaxAge = 5;
+			AllowHeaders = new string[] {};
 		}
 	}
 
 	public class CorsBuilder
 	{
-		private CorsOptions cors;
+		private CorsOptions cors = new();
 
 		/// <summary>
 		/// From what origin should endpoint be available from (All, ThisOrigin)
@@ -65,9 +66,12 @@ namespace SAPI
 			cors.AllowCredentials = true;
 			return this;
 		}
-		
-		// TODO: Implement Access-Control-Allow-Headers : https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Headers
-		// TODO: Implement Access-Control-Allow-Methods : https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Methods
+
+		public CorsBuilder AllowHeaders(string[] headers)
+		{
+			cors.AllowHeaders = headers;
+			return this;
+		}
 
 		/// <summary>
 		/// Max time that preflight request should be cached for

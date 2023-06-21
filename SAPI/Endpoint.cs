@@ -1,4 +1,6 @@
 ﻿using System.Net;
+using System.Reflection;
+using SAPI.LLAPI;
 
 namespace SAPI
 {
@@ -42,11 +44,12 @@ namespace SAPI
 					Options(ref packet, new CorsOptions());
 					break;
 				}
-				case Method.HEAD:
-				{
-					Head(ref packet);
-					break;
-				}
+				// Disabled for now
+				// case Method.HEAD:
+				// {
+				// 	Head(ref packet);
+				// 	break;
+				// }
 			}
 		}
 
@@ -70,13 +73,24 @@ namespace SAPI
 		{
 		}
 
-		protected virtual void Options(ref Packet packet, CorsOptions corsOptions)
+		protected virtual void Options(ref Packet packet, CorsOptions cors)
 		{
-			// TODO: Implement CORS (adding headers)
+			packet.Response.AddHeader("Access-Control-Allow-Origin", cors.AllowOrigin);
+			if (cors.AllowCredentials)
+				packet.Response.AddHeader("Access-Control-Allow-Credentials", "true");
+			packet.Response.AddHeader("Access-Control-Max-Age", cors.MaxAge.ToString());
+			if (cors.AllowHeaders.Length > 0)
+			{
+				string allowHeaders = String.Join(", ", cors.AllowHeaders);
+				packet.Response.AddHeader("Access-Control-Allow-Headers", allowHeaders);
+			}
+
+			packet.Response.AddHeader("Access-Control-Allow-Methods", EndpointManager.GetDefinedMethods(GetType()));
 		}
 
-		protected virtual void Head(ref Packet packet)
-		{
-		}
+		// Disabled for now
+		// protected virtual void Head(ref Packet packet)
+		// {
+		// }
 	}
 }
