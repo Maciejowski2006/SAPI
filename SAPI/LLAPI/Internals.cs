@@ -1,7 +1,6 @@
 ﻿using System.Net;
-using Debug = SAPI.LLAPI.Debug;
 
-namespace SAPI.Internal
+namespace SAPI.LLAPI
 {
 	internal static class Internals
 	{
