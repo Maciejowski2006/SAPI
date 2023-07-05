@@ -2,7 +2,7 @@
 
 namespace SAPI.LLAPI
 {
-	internal class SentryWrapper
+	internal static class SentryWrapper
 	{
 		public static void CaptureException(Exception e)
 		{
