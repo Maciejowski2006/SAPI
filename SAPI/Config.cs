@@ -44,12 +44,10 @@ namespace SAPI
 
 		public static ConfigFile ReadConfig()
 		{
-			using (StreamReader sr = new(configFile))
-			{
-				var json = sr.ReadToEnd();
-				var config = JsonConvert.DeserializeObject<ConfigFile>(json);
-				return config;
-			}
+			using StreamReader sr = new(configFile);
+			string json = sr.ReadToEnd();
+			ConfigFile config = JsonConvert.DeserializeObject<ConfigFile>(json)!;
+			return config;
 		}
 	}
 
