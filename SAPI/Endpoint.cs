@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using System.Reflection;
 using SAPI.LLAPI;
 
 namespace SAPI
@@ -44,12 +43,6 @@ namespace SAPI
 					Options(ref packet, new CorsOptions());
 					break;
 				}
-				// Disabled for now
-				// case Method.HEAD:
-				// {
-				// 	Head(ref packet);
-				// 	break;
-				// }
 			}
 		}
 
@@ -78,6 +71,7 @@ namespace SAPI
 			packet.Response.AddHeader("Access-Control-Allow-Origin", cors.AllowOrigin);
 			if (cors.AllowCredentials)
 				packet.Response.AddHeader("Access-Control-Allow-Credentials", "true");
+			
 			packet.Response.AddHeader("Access-Control-Max-Age", cors.MaxAge.ToString());
 			if (cors.AllowHeaders.Length > 0)
 			{
@@ -87,10 +81,5 @@ namespace SAPI
 
 			packet.Response.AddHeader("Access-Control-Allow-Methods", EndpointManager.GetDefinedMethods(GetType()));
 		}
-
-		// Disabled for now
-		// protected virtual void Head(ref Packet packet)
-		// {
-		// }
 	}
 }
