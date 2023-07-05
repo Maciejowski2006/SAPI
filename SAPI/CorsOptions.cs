@@ -4,8 +4,7 @@ namespace SAPI
 	public enum AccessControlAllowOrigin
 	{
 		All,
-		ThisOrigin,
-		Custom
+		SameOrigin,
 	}
 	public struct CorsOptions
 	{
@@ -28,7 +27,7 @@ namespace SAPI
 		private CorsOptions cors = new();
 
 		/// <summary>
-		/// From what origin should endpoint be available from (All, ThisOrigin)
+		/// From what origin should endpoint be available from (All, SameOrigin)
 		/// </summary>
 		public CorsBuilder AllowOrigin(AccessControlAllowOrigin allowOrigin)
 		{
@@ -39,7 +38,7 @@ namespace SAPI
 					cors.AllowOrigin = "*";
 					break;
 				}
-				case AccessControlAllowOrigin.ThisOrigin:
+				case AccessControlAllowOrigin.SameOrigin:
 				{
 					cors.AllowOrigin = Config.ReadConfig().Url;
 					break;
@@ -52,6 +51,7 @@ namespace SAPI
 		/// <summary>
 		/// From what origin should endpoint be available from (custom url)
 		/// </summary>
+		/// <param name="origin">URL that should be allowed</param>
 		public CorsBuilder AllowOrigin(string origin)
 		{
 			cors.AllowOrigin = origin;
@@ -67,6 +67,10 @@ namespace SAPI
 			return this;
 		}
 
+		/// <summary>
+		/// Add allowed headers
+		/// </summary>
+		/// <param name="headers">Allowed headers</param>
 		public CorsBuilder AllowHeaders(string[] headers)
 		{
 			cors.AllowHeaders = headers;
