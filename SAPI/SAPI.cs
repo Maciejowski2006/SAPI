@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using System.Text.RegularExpressions;
 using SAPI.API.Utilities;
-using SAPI.Internal;
 using SAPI.LLAPI;
 using Sentry;
 using Debug = SAPI.LLAPI.Debug;
@@ -17,9 +16,8 @@ namespace SAPI
 		private static Regex dynamicRegex = new(":(.+?)(?:(?=/)|$)", RegexOptions.Compiled);
 
 		/// <summary>
-		/// Initalizes SAPI on default address: http://localhost:8000/
+		/// Initializes SAPI on default address: http://localhost:8000/
 		/// </summary>
-		/// <param name="url">Sets custom url - remember to put "/" at the end. If no parameter is provided, SAPI starts on default address</param>
 		public Server()
 		{
 			Debug.Init();
@@ -27,7 +25,6 @@ namespace SAPI
 			Config.Init();
 			url = Config.ReadConfig().Url;
 
-			
 			listener = new HttpListener();
 			listener.Prefixes.Add(url);
 			endpoints = new List<Endpoint>();
@@ -48,7 +45,6 @@ namespace SAPI
 					       o.IsGlobalModeEnabled = true;
 				       }))
 				{
-					
 					Debug.Log("Sentry initialized");
 					StartImpl();
 				}
@@ -70,7 +66,7 @@ namespace SAPI
 
 			listener.Close();
 		}
-		
+
 		private static async Task ConnectionHandler()
 		{
 			while (true)
@@ -83,13 +79,13 @@ namespace SAPI
 
 					Internals.PrintRequestInfo(request);
 
-					// Check if path is mapped to any endpoint
+					// Return Not Implemented if there are no endpoints
 					if (Equals(endpoints, Enumerable.Empty<Endpoint>()))
 					{
 						LLAPI.Utilities.Error.ErrorPageResponse(HttpStatus.NotImplemented, ref request, ref response);
 						continue;
 					}
-					
+
 					// Check if content is empty
 					if (request.HttpMethod == Method.POST.ToString() && request.ContentLength64 == 0)
 					{
@@ -122,7 +118,7 @@ namespace SAPI
 
 							if (string.Equals(endpointUrl[i], "{recursive}"))
 								break;
-							
+
 							urlMatched = false;
 							break;
 						}
