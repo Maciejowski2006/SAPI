@@ -125,6 +125,8 @@ namespace SAPI
 
 						if (urlMatched)
 						{
+							
+							response.AddHeader("Server", "SAPI");
 							endpoint.Task(ref request, ref response, parameters);
 							requestResolved = true;
 							response.Close();
