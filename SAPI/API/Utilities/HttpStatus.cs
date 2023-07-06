@@ -10,6 +10,8 @@
 		NotFound,
 		NotAcceptable,
 		ProxyAuthenticationRequired,
+		ImATeapot,
+		EnhanceYourCalm,
 		InternalServerError,
 		NotImplemented,
 		BadGateway,
