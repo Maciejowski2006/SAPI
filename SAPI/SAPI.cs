@@ -79,13 +79,6 @@ namespace SAPI
 
 					Internals.PrintRequestInfo(request);
 
-					// Return Not Implemented if there are no endpoints
-					if (Equals(endpoints, Enumerable.Empty<Endpoint>()))
-					{
-						LLAPI.Utilities.Error.ErrorPageResponse(HttpStatus.NotImplemented, ref request, ref response);
-						continue;
-					}
-
 					// Check if content is empty
 					if (request.HttpMethod == Method.POST.ToString() && request.ContentLength64 == 0)
 					{
