@@ -10,6 +10,7 @@ public class Recursive : Endpoint
 	{
 		string path = Path.Combine(Directory.GetCurrentDirectory(), "public");
 
-		StaticContent.HostDirectoryRecursively(path, url, ref packet);
+		// StaticContent.HostDirectoryRecursively(path, url, ref packet);
+		FileIO.ServeDirectoryRecursively(path, url, ref packet);
 	}
 }

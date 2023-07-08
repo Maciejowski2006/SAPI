@@ -1,11 +1,105 @@
 ﻿using System.Net;
+using FileTypeChecker;
+using FileTypeChecker.Abstracts;
 using SAPI.LLAPI;
-using Debug = SAPI.API.Debug;
+using LowLevelAPI = SAPI.LLAPI.Utilities.FileIO;
 
 namespace SAPI.API.Utilities
 {
-	public class StaticContent
+	public static class FileIO
 	{
+		#region Output
+		
+		private static string fileName;
+		
+		public enum FileNamingScheme
+		{
+			GUID,
+			Timestamp,
+			DateTime
+		}
+		
+		/// <summary>
+		/// Saves file from request to specified location.
+		/// </summary>
+		/// <param name="path">Path to which file should be saved in</param>
+		/// <param name="namingScheme">Naming scheme which file will follow</param>
+		/// <param name="request">Pass from Task()</param>
+		/// <returns>Path to file</returns>
+		public static string SaveFile(string path, FileNamingScheme namingScheme, ref Packet packet)
+		{
+			string tempFile = LowLevelAPI.SaveFile(packet.Request.ContentEncoding, LowLevelAPI.GetBoundary(packet.Request.ContentType), packet.Request.InputStream);
+
+			switch (namingScheme)
+			{
+				case FileNamingScheme.GUID:
+				{
+					fileName = Guid.NewGuid().ToString();
+					fileName += DetermineFileExtension(tempFile);
+
+					break;
+				}
+				case FileNamingScheme.Timestamp:
+				{
+					fileName = Convert.ToString((UInt64)DateTime.Now.AddMilliseconds(2).Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds);
+					fileName += DetermineFileExtension(tempFile);
+
+					break;
+				}
+				case FileNamingScheme.DateTime:
+				{
+					DateTime dt = DateTime.Now.AddMilliseconds(2);
+
+					fileName = $"{dt.Day}-{dt.Month}-{dt.Year}_{dt.Hour}.{dt.Minute}.{dt.Second}.{dt.Millisecond}";
+					fileName += DetermineFileExtension(tempFile);
+
+					break;
+				}
+			}
+
+			string finalPath = Path.Combine(path, fileName);
+
+			File.Copy(tempFile, finalPath);
+			File.Delete(tempFile);
+			return finalPath;
+		}
+		
+		/// <summary>
+		/// Saves file from request to specified location.
+		/// </summary>
+		/// <param name="path">Path to which file should be saved in</param>
+		/// <param name="customFileNameHandler">Custom handler(method) for naming files: param -> temp file location; return -> new file name(with extension)</param>
+		/// <param name="request">Pass from Task()</param>
+		/// <returns>Path to file</returns>
+		public static string SaveFile(string path, Func<string, string> customFileNameHandler, ref Packet packet)
+		{
+			string tempFile = LowLevelAPI.SaveFile(packet.Request.ContentEncoding, LowLevelAPI.GetBoundary(packet.Request.ContentType), packet.Request.InputStream);
+
+			fileName = customFileNameHandler(tempFile);
+
+			string finalPath = Path.Combine(path, fileName);
+
+			File.Copy(tempFile, finalPath);
+			File.Delete(tempFile);
+			return finalPath;
+		}
+		
+		/// <summary>
+		/// Determines file extension based on it's magic bytes
+		/// </summary>
+		/// <param name="file">Path to file</param>
+		/// <returns>File extension(without ".")</returns>
+		public static string DetermineFileExtension(string file)
+		{
+			using FileStream fs = File.OpenRead(file);
+			IFileType f = FileTypeValidator.GetFileType(fs);
+			return f.Extension;
+		}
+		
+		#endregion
+
+		#region Input
+
 		private static readonly IDictionary<string, string> mimeTypeMappings = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
 		{
 			{ ".asf", "video/x-ms-asf" },
@@ -60,22 +154,22 @@ namespace SAPI.API.Utilities
 		/// </summary>
 		/// <param name="path">Path to file</param>
 		/// <param name="response">Pass from Task()</param>
-		public static void FileResponse(string path, ref Packet packet)
+		public static void ServeFile(string path, ref Packet packet)
 		{
 			if (File.Exists(path))
 				try
 				{
 					using (var input = File.Open(path, FileMode.Open))
 					{
+						string file = Path.GetFileName(path);
+						
 						//Adding permanent http response headers
-						string mime;
-						packet.Response.ContentType = mimeTypeMappings.TryGetValue(Path.GetExtension(path), out mime)
-							? mime
-							: "application/octet-stream";
+						packet.Response.ContentType = mimeTypeMappings.TryGetValue(Path.GetExtension(path), out string mime) ? mime : "application/octet-stream";
 
 						packet.Response.ContentLength64 = input.Length;
 						packet.Response.AddHeader("Date", DateTime.Now.ToString("r"));
 						packet.Response.AddHeader("Last-Modified", File.GetLastWriteTime(path).ToString("r"));
+						packet.Response.AddHeader("Content-Disposition", $"filename={file}");
 
 						var buffer = new byte[1024 * 32];
 						int nbytes;
@@ -88,7 +182,7 @@ namespace SAPI.API.Utilities
 
 					packet.Response.StatusCode = (int)HttpStatusCode.OK;
 				}
-				catch (Exception e)
+				catch
 				{
 					packet.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 				}
@@ -104,7 +198,7 @@ namespace SAPI.API.Utilities
 		/// <param name="path">Path to directory</param>
 		/// <param name="parameters">Pass from Task()</param>
 		/// <param name="response">Pass from Task()</param>
-		public static void HostDirectory(string path, ref Packet packet)
+		public static void ServeDirectory(string path, ref Packet packet)
 		{
 			try
 			{
@@ -116,7 +210,7 @@ namespace SAPI.API.Utilities
 
 					if (fileName == packet.Paramters["file"])
 					{
-						FileResponse(fileInDir, ref packet);
+						ServeFile(fileInDir, ref packet);
 						break;
 					}
 				}
@@ -128,7 +222,7 @@ namespace SAPI.API.Utilities
 			}
 		}
 
-		public static void HostDirectoryRecursively(string path, string url, ref Packet packet)
+		public static void ServeDirectoryRecursively(string path, string url, ref Packet packet)
 		{
 			try
 			{
@@ -145,7 +239,7 @@ namespace SAPI.API.Utilities
 				foreach ((string rel, string abs) file in zip)
 					if (recursivePath == file.abs)
 					{
-						FileResponse(file.rel, ref packet);
+						ServeFile(file.rel, ref packet);
 						break;
 					}
 			}
@@ -156,8 +250,10 @@ namespace SAPI.API.Utilities
 			catch (Exception e)
 			{
 				SentryWrapper.CaptureException(e);
-				Error.ErrorPageResponse(HttpStatus.NotFound, ref packet);
+				Error.ErrorPageResponse(HttpStatus.InternalServerError, ref packet);
 			}
 		}
+
+		#endregion
 	}
 }

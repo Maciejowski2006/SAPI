@@ -9,8 +9,15 @@ public class Upload : Endpoint
 
 	protected override void Post(ref Packet packet)
 	{
-		FileUpload.SaveFile(Environment.CurrentDirectory, FileUpload.FileNamingSchemes.GUID, ref packet);
+		//string path = FileIO.SaveFile(Environment.CurrentDirectory, FileIO.FileNamingScheme.Timestamp, ref packet);
+		
+		string path = FileIO.SaveFile("C:\\", (e) =>
+		{
+			Console.WriteLine(e);
+			return $"{Environment.CurrentDirectory}/test.png";
+		}, ref packet);
 
+		Console.WriteLine(path);
 		Error.ErrorPageResponse(HttpStatus.NotAcceptable, ref packet);
 	}
 }
