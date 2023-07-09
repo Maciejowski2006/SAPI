@@ -9,14 +9,25 @@ namespace Testing.Endpoints
 		public override string url { get; } = "cookies";
 		protected override void Get(ref Packet packet)
 		{
-			if (SAPI.API.Utilities.Cookies.CheckForCookie("visit", out Cookie cookie, ref packet))
+			if (packet.Paramters["passcode"] == "letmein")
 			{
-				SAPI.API.Utilities.Cookies.GiveCookie("visit", "false", ref packet);
+				SAPI.API.Utilities.Cookies.GiveCookie(new Cookie("visit", "true"), ref packet);
 				Error.ErrorPageResponse(HttpStatus.OK, ref packet);
 			}
 			else
 			{
-				SAPI.API.Utilities.Cookies.GiveCookie("visit", "true", ref packet);
+				Error.ErrorPageResponse(HttpStatus.Unauthorized, ref packet);
+			}
+				
+				
+			if (SAPI.API.Utilities.Cookies.CheckForCookie("visit", out Cookie cookie, ref packet))
+			{
+				SAPI.API.Utilities.Cookies.GiveCookie(new ("visit", "false"), ref packet);
+				Error.ErrorPageResponse(HttpStatus.OK, ref packet);
+			}
+			else
+			{
+				SAPI.API.Utilities.Cookies.GiveCookie(new ("visit", "true"), ref packet);
 				Error.ErrorPageResponse(HttpStatus.Forbidden, ref packet);
 			}
 		}

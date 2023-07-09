@@ -3,7 +3,7 @@ using SAPI.API.Utilities;
 
 namespace Testing.Endpoints;
 
-record DataModel(int id, string message); 
+record DataModel(int id, string message);
 public class GetJson : Endpoint
 {
 	public override string url { get; } = "json";
