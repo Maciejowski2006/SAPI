@@ -3,13 +3,13 @@ using Newtonsoft.Json;
 
 namespace SAPI.API.Utilities
 {
-	public class Json
+	public static class Json
 	{
 		/// <summary>
-		/// Responds to client with JSON object. Execute at the end of the task.
+		/// Responds to the client with JSON object. Execute at the end of the task.
 		/// </summary>
 		/// <param name="json">Add here your object to send with json</param>
-		/// <param name="response">Response ref you got from server - argument in Task()</param>
+		/// <param name="response">Response ref you got from server</param>
 		public static void Response<T>(T json, ref Packet packet)
 		{
 			var serializedJson = JsonConvert.SerializeObject(json);
