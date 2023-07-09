@@ -17,11 +17,11 @@ namespace SAPI.API.Utilities
 		/// <param name="keys">List of all API keys authorized</param>
 		/// <param name="headerName">Name of the authorization header(OpenAPI 3.0 specification suggests the default should be "x-api-key"</param>
 		/// <param name="packet">Packet ref you got from server</param>
-		public static bool CheckForApiKey(List<string> keys, string headerName, ref Packet packet)
+		public static bool CheckForApiKey(List<string> keys, ref Packet packet)
 		{
 			try
 			{
-				if (GetApiKey(out string? _key, headerName, ref packet))
+				if (GetApiKey(out string? _key, ref packet))
 					foreach (var key in keys)
 					{
 						if (_key == key)
@@ -64,9 +64,9 @@ namespace SAPI.API.Utilities
 			return false;
 		}
 		
-		public static bool GetApiKey(out string? key, string headerName, ref Packet packet)
+		public static bool GetApiKey(out string? key, ref Packet packet)
 		{
-			key = packet.Request.Headers.Get(headerName);
+			key = packet.Request.Headers.Get("x-api-key");
 
 			if (key is null)
 				return false;
