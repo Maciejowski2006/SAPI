@@ -2,7 +2,12 @@
 
 namespace SAPI.API.Utilities
 {
-	public record BasicAuthCredentials(string username, string password);
+	public record BasicCredentials(string Username, string? Password, string? HashedPassword = null)
+	{
+		public string Username = Username;
+		public string? Password = Password;
+		public string? HashedPassword = HashedPassword;
+	}
 
 	public static class Auth
 	{
@@ -10,40 +15,45 @@ namespace SAPI.API.Utilities
 		/// Checks if user with provided API key exists.
 		/// </summary>
 		/// <param name="keys">List of all API keys authorized</param>
-		/// <param name="headerName">Name of the authorization header(the OpenAPI 3.0 specification says the default should be "X-Api-Key"</param>
-		/// <param name="request">Request ref you got from server - argument in Task()</param>
-		public static bool CheckForKey(List<string> keys, string headerName, ref Packet packet)
+		/// <param name="headerName">Name of the authorization header(OpenAPI 3.0 specification suggests the default should be "x-api-key"</param>
+		/// <param name="packet">Packet ref you got from server</param>
+		public static bool CheckForApiKey(List<string> keys, string headerName, ref Packet packet)
 		{
 			try
 			{
-				foreach (var key in keys)
-					if (packet.Request.Headers.Get(headerName).Contains(key))
-						return true;
+				if (GetApiKey(out string? _key, headerName, ref packet))
+					foreach (var key in keys)
+					{
+						if (_key == key)
+							return true;
+					}
 
 				return false;
 			}
 			catch
 			{
-				Console.WriteLine($"Request does not have {headerName}.");
 				return false;
 			}
 		}
 
-		/// TODO: Doesn't work - investigate
 		/// <summary>
 		/// Checks if user with provided credentials exists.
 		/// </summary>
 		/// <param name="credentialsList">List of all usernames and passwords authorized</param>
-		/// <param name="request">Request ref you got from server - argument in Task()</param>
-		public static bool CheckForUserPass(List<BasicAuthCredentials> credentialsList, ref Packet packet)
+		/// <param name="hashingFunction">Password hashing algorithm. Takes un-hashed password as parameter, returns hashed password</param>
+		/// <param name="packet">Packet ref you got from server</param>
+		public static bool CheckForBasicCredentials(List<BasicCredentials> credentialsList, Func<string, string> hashingFunction, ref Packet packet)
 		{
 			try
 			{
-				if (GetBasicAuthCredentials(out BasicAuthCredentials credentials, ref packet))
+				if (GetBasicCredentials(out BasicCredentials? credentials, ref packet))
 				{
-					foreach (BasicAuthCredentials _credentials in credentialsList)
-						if (string.Equals(_credentials.username, credentials.username) && string.Equals(_credentials.password, credentials.password))
+					credentials.HashedPassword = hashingFunction(credentials.Password);
+					foreach (BasicCredentials _credentials in credentialsList)
+					{
+						if (string.Equals(_credentials.Username, credentials.Username) && string.Equals(_credentials.HashedPassword, credentials.HashedPassword))
 							return true;
+					}
 				}
 			}
 			catch
@@ -53,13 +63,23 @@ namespace SAPI.API.Utilities
 
 			return false;
 		}
+		
+		public static bool GetApiKey(out string? key, string headerName, ref Packet packet)
+		{
+			key = packet.Request.Headers.Get(headerName);
+
+			if (key is null)
+				return false;
+
+			return true;
+		}
 
 		/// <summary>
 		/// Returns Basic auth credentials.
 		/// </summary>
 		/// <param name="credentials">Variable contains passed user credentials</param>
-		/// <param name="request">Pass from Task()</param>
-		public static bool GetBasicAuthCredentials(out BasicAuthCredentials? credentials, ref Packet packet)
+		/// <param name="request">Packet ref you got from server</param>
+		public static bool GetBasicCredentials(out BasicCredentials? credentials, ref Packet packet)
 		{
 			credentials = null;
 			try
@@ -72,15 +92,15 @@ namespace SAPI.API.Utilities
 
 					string[] auth = Encoding.UTF8.GetString(decodedBase64).Split(':');
 					credentials = new(auth[0], auth[1]);
+					return true;
 				}
 
-				return true;
+				return false;
 			}
 			catch
 			{
 				Debug.Log("Request does not have Authorization header.");
 			}
-
 			return false;
 		}
 	}
