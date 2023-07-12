@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using SAPI.API.Utilities;
 using SAPI.LLAPI;
 
 namespace SAPI
@@ -43,6 +44,11 @@ namespace SAPI
 					Options(ref packet, new CorsOptions());
 					break;
 				}
+				case Method.HEAD:
+				{
+					Head(ref packet);
+					break;
+				}
 			}
 		}
 
@@ -81,5 +87,8 @@ namespace SAPI
 
 			packet.Response.AddHeader("Access-Control-Allow-Methods", EndpointManager.GetDefinedMethods(GetType()));
 		}
+
+		// Override for HEAD method
+		private void Head(ref Packet packet) => Error.ErrorPageResponse(HttpStatus.MethodNotAllowed, ref packet);
 	}
 }

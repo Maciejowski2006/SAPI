@@ -8,6 +8,7 @@
 		Unauthorized,
 		Forbidden,
 		NotFound,
+		MethodNotAllowed,
 		NotAcceptable,
 		ProxyAuthenticationRequired,
 		ImATeapot,
