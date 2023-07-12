@@ -15,7 +15,6 @@ namespace SAPI.API.Utilities
 		/// Checks if user with provided API key exists.
 		/// </summary>
 		/// <param name="keys">List of all API keys authorized</param>
-		/// <param name="headerName">Name of the authorization header(OpenAPI 3.0 specification suggests the default should be "x-api-key"</param>
 		/// <param name="packet">Packet ref you got from server</param>
 		public static bool CheckForApiKey(List<string> keys, ref Packet packet)
 		{
@@ -78,7 +77,7 @@ namespace SAPI.API.Utilities
 		/// Returns Basic auth credentials.
 		/// </summary>
 		/// <param name="credentials">Variable contains passed user credentials</param>
-		/// <param name="request">Packet ref you got from server</param>
+		/// <param name="packet">Packet ref you got from server</param>
 		public static bool GetBasicCredentials(out BasicCredentials? credentials, ref Packet packet)
 		{
 			credentials = null;
