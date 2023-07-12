@@ -52,7 +52,7 @@ namespace SAPI.LLAPI
 			Console.ResetColor();
 			
 			using StreamWriter sw = File.AppendText(logFile ?? userLog);
-			sw.WriteLine($"[ {DateTime.Now} ] {message}");
+			sw.WriteLine($"[ {DateTime.Now} | {severity} ] {message}");
 		}
 	}
 }
