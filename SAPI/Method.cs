@@ -8,5 +8,6 @@
 		PATCH,
 		DELETE,
 		OPTIONS,
+		HEAD
 	}
 }
