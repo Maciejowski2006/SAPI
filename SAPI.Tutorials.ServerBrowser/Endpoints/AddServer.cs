@@ -11,8 +11,16 @@ namespace Tutorials.ServerBrowser.Endpoints
 
 		protected override void Post(ref Packet packet)
 		{
-			Json.Fetch(out Models.Server server, ref packet);
-			Database.AddServer(server);
+			List<string> apiKeys = Database.GetApiKeys();
+			if (Auth.CheckForApiKey(apiKeys, ref packet))
+			{
+				Json.Fetch(out Models.Server server, ref packet);
+				Database.AddServer(server);
+			}
+			else
+			{
+				Error.ErrorPageResponse(HttpStatus.Unauthorized, ref packet);
+			}
 		}
 	}
 }
