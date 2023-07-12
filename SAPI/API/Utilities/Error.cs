@@ -47,7 +47,7 @@ namespace SAPI.API.Utilities
 		/// Shows an error page.
 		/// </summary>
 		/// <param name="httpStatus">It's the status code send to client</param>
-		/// <param name="response">Response ref you got from server - argument in Task()</param>
+		/// <param name="packet">Response ref you got from server - argument in Task()</param>
 		public static void ErrorPageResponse(HttpStatus httpStatus, ref Packet packet)
 		{
 			string statusName = httpStatusNames[httpStatus];
