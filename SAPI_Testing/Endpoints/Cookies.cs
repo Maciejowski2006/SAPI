@@ -12,23 +12,23 @@ namespace Testing.Endpoints
 			if (packet.Paramters["passcode"] == "letmein")
 			{
 				SAPI.API.Utilities.Cookies.GiveCookie(new Cookie("visit", "true"), ref packet);
-				Error.ErrorPageResponse(HttpStatus.OK, ref packet);
+				Error.Page(HttpStatus.OK, ref packet);
 			}
 			else
 			{
-				Error.ErrorPageResponse(HttpStatus.Unauthorized, ref packet);
+				Error.Page(HttpStatus.Unauthorized, ref packet);
 			}
 				
 				
 			if (SAPI.API.Utilities.Cookies.CheckForCookie("visit", out Cookie cookie, ref packet))
 			{
 				SAPI.API.Utilities.Cookies.GiveCookie(new ("visit", "false"), ref packet);
-				Error.ErrorPageResponse(HttpStatus.OK, ref packet);
+				Error.Page(HttpStatus.OK, ref packet);
 			}
 			else
 			{
 				SAPI.API.Utilities.Cookies.GiveCookie(new ("visit", "true"), ref packet);
-				Error.ErrorPageResponse(HttpStatus.Forbidden, ref packet);
+				Error.Page(HttpStatus.Forbidden, ref packet);
 			}
 		}
 	}

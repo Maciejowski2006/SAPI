@@ -218,7 +218,7 @@ namespace SAPI.API.Utilities
 			catch (Exception e)
 			{
 				Debug.Log($"Error: {e}");
-				Error.ErrorPageResponse(HttpStatus.NotFound, ref packet);
+				Error.Page(HttpStatus.NotFound, ref packet);
 			}
 		}
 
@@ -250,7 +250,7 @@ namespace SAPI.API.Utilities
 			catch (Exception e)
 			{
 				SentryWrapper.CaptureException(e);
-				Error.ErrorPageResponse(HttpStatus.InternalServerError, ref packet);
+				Error.Page(HttpStatus.InternalServerError, ref packet);
 			}
 		}
 

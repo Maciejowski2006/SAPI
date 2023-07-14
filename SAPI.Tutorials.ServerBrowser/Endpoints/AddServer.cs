@@ -19,7 +19,7 @@ namespace Tutorials.ServerBrowser.Endpoints
 			}
 			else
 			{
-				Error.ErrorPageResponse(HttpStatus.Unauthorized, ref packet);
+				Error.Page(HttpStatus.Unauthorized, ref packet);
 			}
 		}
 	}
