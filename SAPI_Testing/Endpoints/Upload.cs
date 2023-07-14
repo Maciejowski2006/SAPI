@@ -18,6 +18,6 @@ public class Upload : Endpoint
 		}, ref packet);
 
 		Console.WriteLine(path);
-		Error.ErrorPageResponse(HttpStatus.NotAcceptable, ref packet);
+		Error.Page(HttpStatus.NotAcceptable, ref packet);
 	}
 }

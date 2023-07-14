@@ -50,7 +50,7 @@ namespace SAPI.API.Utilities
 		/// </summary>
 		/// <param name="httpStatus">It's the status code send to client</param>
 		/// <param name="packet">Response ref you got from server - argument in Task()</param>
-		public static void ErrorPageResponse(HttpStatus httpStatus, ref Packet packet)
+		public static void Page(HttpStatus httpStatus, ref Packet packet)
 		{
 			string statusName = httpStatusNames[httpStatus];
 			int statusCode = httpStatusCodes[httpStatus];

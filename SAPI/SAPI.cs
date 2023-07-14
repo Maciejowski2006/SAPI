@@ -82,7 +82,7 @@ namespace SAPI
 					// Check if content is empty
 					if (request.HttpMethod == Method.POST.ToString() && request.ContentLength64 == 0)
 					{
-						LLAPI.Utilities.Error.ErrorPageResponse(HttpStatus.BadRequest, ref request, ref response);
+						LLAPI.Utilities.Error.Page(HttpStatus.BadRequest, ref request, ref response);
 						Debug.Warn("Content body is empty: aborting");
 						response.Close();
 						continue;
@@ -128,7 +128,7 @@ namespace SAPI
 
 					// Throw 404 if result is not resolved by any of mounted endpoints
 					if (!requestResolved)
-						LLAPI.Utilities.Error.ErrorPageResponse(HttpStatus.NotFound, ref request, ref response);
+						LLAPI.Utilities.Error.Page(HttpStatus.NotFound, ref request, ref response);
 				}
 				catch (Exception ex)
 				{
