@@ -11,7 +11,6 @@ namespace SAPI
 	{
 		private static HttpListener listener;
 		private string url;
-		private static bool requestResolved;
 		private static List<Endpoint> endpoints;
 		private static Regex dynamicRegex = new(":(.+?)(?:(?=/)|$)", RegexOptions.Compiled);
 
@@ -88,6 +87,8 @@ namespace SAPI
 						continue;
 					}
 
+					bool requestResolved = false;
+					
 					// Endpoint handling
 					foreach (var endpoint in endpoints)
 					{
