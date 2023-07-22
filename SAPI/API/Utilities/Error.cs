@@ -1,4 +1,5 @@
-﻿using SAPI.LLAPI.Utilities;
+﻿using System.Net;
+using SAPI.LLAPI.Utilities;
 
 // Disable warnings about using obsolete methods
 #pragma warning disable CS0618
