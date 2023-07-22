@@ -19,6 +19,18 @@ namespace SAPI.LLAPI
 			}
 		}
 
+		public static bool CheckForDefinedMethod(string method, Type endpoint)
+		{
+			try
+			{
+				return endpoint.GetMember(method, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly).Length != 0;
+			}
+			catch
+			{
+				return false;
+			}
+		}
+		
 		public static string GetDefinedMethods(Type endpoint)
 		{
 			string[] methods = { "Get", "Post", "Put", "Patch", "Delete" };
@@ -26,7 +38,7 @@ namespace SAPI.LLAPI
 
 			foreach (string method in methods)
 			{
-				if (endpoint.GetMember(method, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly).Length != 0)
+				if (CheckForDefinedMethod(method, endpoint))
 					definedMethods.Add(method.ToUpper());
 			}
 

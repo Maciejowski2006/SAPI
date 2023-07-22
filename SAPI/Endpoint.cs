@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Xml;
 using SAPI.API.Utilities;
 using SAPI.LLAPI;
 
@@ -12,6 +13,13 @@ namespace SAPI
 		{
 			Packet packet = new(ref request, ref response, parameters);
 			Method method = Enum.Parse<Method>(request.HttpMethod);
+
+			string methodCapitalized = $"{request.HttpMethod[0].ToString().ToUpper()}{request.HttpMethod.Substring(1).ToLower()}";
+			if (!EndpointManager.CheckForDefinedMethod(methodCapitalized, GetType()))
+			{
+				Error.Page(HttpStatus.MethodNotAllowed, ref packet);
+				return;
+			}
 			switch (method)
 			{
 				case Method.GET:
