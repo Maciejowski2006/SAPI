@@ -1,7 +1,7 @@
 ﻿using System.Net;
-using System.Xml;
 using SAPI.API.Utilities;
 using SAPI.LLAPI;
+using Debug = SAPI.API.Debug;
 
 namespace SAPI
 {
@@ -24,44 +24,53 @@ namespace SAPI
 					return;
 				}
 			}
-			
-			switch (method)
+
+			try
 			{
-				case Method.GET:
+				switch (method)
 				{
-					Get(ref packet);
-					break;
+					case Method.GET:
+					{
+						Get(ref packet);
+						break;
+					}
+					case Method.POST:
+					{
+						Post(ref packet);
+						break;
+					}
+					case Method.PUT:
+					{
+						Put(ref packet);
+						break;
+					}
+					case Method.PATCH:
+					{
+						Patch(ref packet);
+						break;
+					}
+					case Method.DELETE:
+					{
+						Delete(ref packet);
+						break;
+					}
+					case Method.OPTIONS:
+					{
+						Options(ref packet, new CorsOptions());
+						break;
+					}
+					case Method.HEAD:
+					{
+						Head(ref packet);
+						break;
+					}
 				}
-				case Method.POST:
-				{
-					Post(ref packet);
-					break;
-				}
-				case Method.PUT:
-				{
-					Put(ref packet);
-					break;
-				}
-				case Method.PATCH:
-				{
-					Patch(ref packet);
-					break;
-				}
-				case Method.DELETE:
-				{
-					Delete(ref packet);
-					break;
-				}
-				case Method.OPTIONS:
-				{
-					Options(ref packet, new CorsOptions());
-					break;
-				}
-				case Method.HEAD:
-				{
-					Head(ref packet);
-					break;
-				}
+			}
+			catch (Exception e)
+			{
+				Debug.Error($"Error: {e.Message}");
+				Debug.Error($"Stack Trace: {e.StackTrace}");
+				Error.Page(HttpStatus.InternalServerError, ref packet);
 			}
 		}
 
