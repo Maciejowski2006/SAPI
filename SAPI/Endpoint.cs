@@ -111,6 +111,8 @@ namespace SAPI
 		}
 
 		// Override for HEAD method
-		private void Head(ref Packet packet) => Error.Page(HttpStatus.MethodNotAllowed, ref packet);
+		protected virtual void Head(ref Packet packet)
+		{
+		}
 	}
 }
