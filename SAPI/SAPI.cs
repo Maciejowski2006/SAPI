@@ -100,6 +100,12 @@ namespace SAPI
 						// Check if requested URL matches static or dynamic endpoint
 						for (var i = 0; i < endpointUrl.Length; i++)
 						{
+							if (requestUrl.Length < endpointUrl.Length)
+							{
+								urlMatched = false;
+								break;
+							}
+							
 							if (string.Equals(endpointUrl[i], requestUrl[i]))
 								continue;
 
