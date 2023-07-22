@@ -23,6 +23,9 @@ namespace SAPI.LLAPI
 		{
 			try
 			{
+				if (method == "Head" && CheckForDefinedMethod("Get", endpoint))
+					return true;
+				
 				return endpoint.GetMember(method, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly).Length != 0;
 			}
 			catch
@@ -33,7 +36,7 @@ namespace SAPI.LLAPI
 		
 		public static string GetDefinedMethods(Type endpoint)
 		{
-			string[] methods = { "Get", "Post", "Put", "Patch", "Delete" };
+			string[] methods = { "Get", "Post", "Put", "Patch", "Delete", "Head" };
 			List<string> definedMethods = new();
 
 			foreach (string method in methods)

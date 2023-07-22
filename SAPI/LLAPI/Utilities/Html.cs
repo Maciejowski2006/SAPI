@@ -19,7 +19,10 @@ namespace SAPI.LLAPI.Utilities
 			packet.Response.ContentLength64 = data.LongLength;
 			packet.Response.StatusCode = statusCode;
 
-			packet.Response.OutputStream.Write(data, 0, data.Length);
+			if (packet.Request.HttpMethod != "HEAD")
+			{
+				packet.Response.OutputStream.Write(data, 0, data.Length);
+			}
 		}
 	}
 }

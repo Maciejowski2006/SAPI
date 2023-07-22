@@ -16,7 +16,7 @@ namespace SAPI
 
 			if (method != Method.OPTIONS)
 			{
-				string methodCapitalized = $"{request.HttpMethod[0].ToString().ToUpper()}{request.HttpMethod.Substring(1).ToLower()}";
+				string methodCapitalized = $"{method.ToString()[0].ToString().ToUpper()}{method.ToString().Substring(1).ToLower()}";
 
 				if (!EndpointManager.CheckForDefinedMethod(methodCapitalized, GetType()))
 				{
@@ -110,9 +110,9 @@ namespace SAPI
 			packet.Response.AddHeader("Access-Control-Allow-Methods", EndpointManager.GetDefinedMethods(GetType()));
 		}
 
-		// Override for HEAD method
-		protected virtual void Head(ref Packet packet)
+		protected void Head(ref Packet packet)
 		{
+			Get(ref packet);
 		}
 	}
 }

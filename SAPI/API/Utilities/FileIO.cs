@@ -174,7 +174,12 @@ namespace SAPI.API.Utilities
 						var buffer = new byte[1024 * 32];
 						int nbytes;
 						while ((nbytes = input.Read(buffer, 0, buffer.Length)) > 0)
-							packet.Response.OutputStream.Write(buffer, 0, nbytes);
+						{
+							if (packet.Request.HttpMethod != "HEAD")
+							{
+								packet.Response.OutputStream.Write(buffer, 0, nbytes);
+							}
+						}
 
 						input.Close();
 						packet.Response.OutputStream.Flush();
