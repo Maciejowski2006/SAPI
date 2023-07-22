@@ -1,4 +1,5 @@
-﻿using SAPI;
+﻿using System.Buffers.Text;
+using SAPI;
 using SAPI.API.Utilities;
 
 namespace Testing.Endpoints;
@@ -11,10 +12,10 @@ public class Upload : Endpoint
 	{
 		//string path = FileIO.SaveFile(Environment.CurrentDirectory, FileIO.FileNamingScheme.Timestamp, ref packet);
 		
-		string path = FileIO.SaveFile("C:\\", (e) =>
+		string path = FileIO.SaveFile(Environment.CurrentDirectory, (file) =>
 		{
-			Console.WriteLine(e);
-			return $"{Environment.CurrentDirectory}/test.png";
+			string ext = FileIO.DetermineFileExtension(file);
+			return $"test.{ext}";
 		}, ref packet);
 
 		Console.WriteLine(path);

@@ -8,7 +8,9 @@ public class SAPI_Testing
 	{
 		Server sapi = new();
 		
-		Debug.Warn("Test");
+		Debug.Log("Info");
+		Debug.Warn("Warning");
+		Debug.Error("Error");
 		
 		sapi.Start();
 	}

@@ -23,9 +23,9 @@ namespace SAPI.API.Utilities
 		/// Saves file from request to specified location.
 		/// </summary>
 		/// <param name="path">Path to which file should be saved in</param>
-		/// <param name="namingScheme">Naming scheme which file will follow</param>
-		/// <param name="request">Pass from Task()</param>
-		/// <returns>Path to file</returns>
+		/// <param name="namingScheme">A naming scheme that the file will follow</param>
+		/// <param name="packet">Packet from HTTP method</param>
+		/// <returns>Path to the file</returns>
 		public static string SaveFile(string path, FileNamingScheme namingScheme, ref Packet packet)
 		{
 			string tempFile = LowLevelAPI.SaveFile(packet.Request.ContentEncoding, LowLevelAPI.GetBoundary(packet.Request.ContentType), packet.Request.InputStream);
@@ -68,8 +68,8 @@ namespace SAPI.API.Utilities
 		/// Saves file from request to specified location.
 		/// </summary>
 		/// <param name="path">Path to which file should be saved in</param>
-		/// <param name="customFileNameHandler">Custom handler(method) for naming files: param -> temp file location; return -> new file name(with extension)</param>
-		/// <param name="request">Pass from Task()</param>
+		/// <param name="customFileNameHandler">Custom method for naming files: param -> temp file location; return -> new file name(with extension)</param>
+		/// <param name="packet">Packet from HTTP method</param>
 		/// <returns>Path to file</returns>
 		public static string SaveFile(string path, Func<string, string> customFileNameHandler, ref Packet packet)
 		{
@@ -85,9 +85,9 @@ namespace SAPI.API.Utilities
 		}
 		
 		/// <summary>
-		/// Determines file extension based on it's magic bytes
+		/// Determines file extension based on it's file signature
 		/// </summary>
-		/// <param name="file">Path to file</param>
+		/// <param name="file">Path to the file which extension should be checked</param>
 		/// <returns>File extension(without ".")</returns>
 		public static string DetermineFileExtension(string file)
 		{
@@ -150,10 +150,10 @@ namespace SAPI.API.Utilities
 		};
 
 		/// <summary>
-		/// Responds to client with file
+		/// Responds to the client with file
 		/// </summary>
 		/// <param name="path">Path to file</param>
-		/// <param name="response">Pass from Task()</param>
+		/// <param name="packet">Packet from HTTP method</param>
 		public static void ServeFile(string path, ref Packet packet)
 		{
 			if (File.Exists(path))
@@ -193,11 +193,10 @@ namespace SAPI.API.Utilities
 		}
 
 		/// <summary>
-		/// Exposes a directory contents to be accessed by clients
+		/// Exposes directory contents to be accessed by clients
 		/// </summary>
 		/// <param name="path">Path to directory</param>
-		/// <param name="parameters">Pass from Task()</param>
-		/// <param name="response">Pass from Task()</param>
+		/// <param name="packet">Packet from HTTP method</param>
 		public static void ServeDirectory(string path, ref Packet packet)
 		{
 			try
@@ -222,6 +221,11 @@ namespace SAPI.API.Utilities
 			}
 		}
 
+		/// <summary>
+		/// Recursively exposes a directory contents to be accessed by clients
+		/// </summary>
+		/// <param name="path">Path to directory</param>
+		/// <param name="packet">Packet from HTTP method</param>
 		public static void ServeDirectoryRecursively(string path, string url, ref Packet packet)
 		{
 			try

@@ -10,9 +10,7 @@ namespace Testing.Endpoints
 		{
 			string path = Path.Combine(Directory.GetCurrentDirectory(), "public");
 
-			// StaticContent.HostDirectory(path, ref packet);
 			FileIO.ServeDirectory(path, ref packet);
 		}
-		
 	}
 }

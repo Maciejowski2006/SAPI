@@ -10,7 +10,6 @@ namespace Testing.Endpoints
 		{
 			string file = Path.Combine(Directory.GetCurrentDirectory(), "linus.mov");
 			
-			// StaticContent.FileResponse(file, ref packet);
 			FileIO.ServeFile(file, ref packet);
 		}
 	}
