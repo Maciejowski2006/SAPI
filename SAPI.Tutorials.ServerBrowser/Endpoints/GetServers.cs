@@ -1,7 +1,6 @@
 ﻿using SAPI;
 using SAPI.API.Utilities;
 using Tutorials.ServerBrowser.Services;
-using Tutorials.ServerBrowser.Models;
 
 // ReSharper disable CheckNamespace
 namespace Tutorials.ServerBrowser.Endpoints
