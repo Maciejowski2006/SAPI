@@ -212,7 +212,7 @@ namespace SAPI.API.Utilities
 				{
 					string fileName = Path.GetFileName(fileInDir);
 
-					if (fileName == packet.Paramters["file"])
+					if (fileName == packet.Parameters["file"])
 					{
 						ServeFile(fileInDir, ref packet);
 						break;

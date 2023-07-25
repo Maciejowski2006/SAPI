@@ -10,10 +10,10 @@ public class DynamicGet : Endpoint
 	public override string url { get; } = "dynamic/:id/test/:name";
 	protected override void Get(ref Packet packet)
 	{
-		Console.WriteLine(packet.Paramters["id"]);
-		Console.WriteLine(packet.Paramters["name"]);
+		Console.WriteLine(packet.Parameters["id"]);
+		Console.WriteLine(packet.Parameters["name"]);
 
-		Data data = new(packet.Paramters["id"], packet.Paramters["name"]);
+		Data data = new(packet.Parameters["id"], packet.Parameters["name"]);
 		
 		Json.Response(data, ref packet);
 	}

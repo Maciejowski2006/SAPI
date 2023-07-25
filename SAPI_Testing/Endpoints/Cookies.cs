@@ -9,7 +9,7 @@ namespace Testing.Endpoints
 		public override string url { get; } = "cookies";
 		protected override void Get(ref Packet packet)
 		{
-			if (packet.Paramters["passcode"] == "letmein")
+			if (packet.Parameters["passcode"] == "letmein")
 			{
 				SAPI.API.Utilities.Cookies.GiveCookie(new Cookie("visit", "true"), ref packet);
 				Error.Page(HttpStatus.OK, ref packet);

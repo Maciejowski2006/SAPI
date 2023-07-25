@@ -12,7 +12,7 @@ namespace Tutorials.ServerBrowser.Endpoints
 		{
 			List<Models.Server> db = Database.GetServers();
 
-			string serverIp = packet.Paramters["ip"];
+			string serverIp = packet.Parameters["ip"];
 			Models.Server? server = db.Find(x => x.IpAddress == serverIp);
 
 			Json.Response(server, ref packet);

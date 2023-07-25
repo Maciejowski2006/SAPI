@@ -18,7 +18,7 @@ public class GetWeather : Endpoint
 
 		foreach (City city in cities)
 		{
-			if (city.Country == packet.Paramters["country"] && city.Name == packet.Paramters["city"])
+			if (city.Country == packet.Parameters["country"] && city.Name == packet.Parameters["city"])
 				Json.Response(city, ref packet);
 		}
 	}

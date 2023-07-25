@@ -6,13 +6,13 @@ namespace SAPI
 	{
 		public HttpListenerRequest Request { get; init; }
 		public HttpListenerResponse Response { get; init; }
-		public readonly Dictionary<string, string> Paramters { get; init; }
+		public readonly Dictionary<string, string> Parameters { get; init; }
 
-		public Packet(ref HttpListenerRequest request, ref HttpListenerResponse response, Dictionary<string, string> paramters)
+		public Packet(ref HttpListenerRequest request, ref HttpListenerResponse response, Dictionary<string, string> parameters)
 		{
 			Request = request;
 			Response = response;
-			Paramters = paramters;
+			Parameters = parameters;
 		}
 	}
 }
