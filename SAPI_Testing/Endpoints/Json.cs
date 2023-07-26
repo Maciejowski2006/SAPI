@@ -1,31 +1,25 @@
-﻿using System.Net;
-using SAPI.Endpoints;
-using SAPI.Utilities;
+﻿using SAPI;
+using SAPI.API.Utilities;
 
 namespace Testing.Endpoints;
 
-record DataModel(int id, string message); 
-public class GetJson : IEndpoint
+record DataModel(int id, string message);
+public class GetJson : Endpoint
 {
-	public string url { get; } = "get-json";
-	public Method method { get; } = Method.GET;
-	public void Task(ref HttpListenerRequest request, ref HttpListenerResponse response, Dictionary<string, string> parameters)
+	public override string url { get; } = "json";
+	protected override void Get(ref Packet packet)
 	{
 		DataModel model = new(14, "Hello, World!");
 		
-		Json.Response(model, ref response);
+		Json.Response(model, ref packet);
 	}
-}
-public class SendJson : IEndpoint
-{
-	public string url { get; } = "send-json";
-	public Method method { get; } = Method.POST;
-	public void Task(ref HttpListenerRequest request, ref HttpListenerResponse response, Dictionary<string, string> parameters)
+
+	protected override void Post(ref Packet packet)
 	{
-		Json.Fetch(out DataModel model, ref request);
+		Json.Fetch(out DataModel model, ref packet);
 		
 		Console.WriteLine($"ID: {model.id}\nMessage: {model.message}");
 		
-		Json.Response(model, ref response);
+		Json.Response(model, ref packet);
 	}
 }

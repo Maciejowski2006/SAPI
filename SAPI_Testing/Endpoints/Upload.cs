@@ -1,18 +1,24 @@
-﻿using System.Net;
-using System.Text;
-using SAPI.Endpoints;
-using SAPI.Utilities;
+﻿using System.Buffers.Text;
+using SAPI;
+using SAPI.API.Utilities;
 
 namespace Testing.Endpoints;
 
-public class Upload : IEndpoint
+public class Upload : Endpoint
 {
-	public string url { get; } = "upload";
-	public Method method { get; } = Method.POST;
-	public void Task(ref HttpListenerRequest request, ref HttpListenerResponse response, Dictionary<string, string> parameters)
-	{
-		FileUpload.SaveFile(Environment.CurrentDirectory, FileUpload.FileNamingSchemes.GUID, ref request);
+	public override string url { get; } = "upload";
 
-		Error.ErrorPageResponse(HttpStatus.NotAcceptable, ref response);
+	protected override void Post(ref Packet packet)
+	{
+		//string path = FileIO.SaveFile(Environment.CurrentDirectory, FileIO.FileNamingScheme.Timestamp, ref packet);
+		
+		string path = FileIO.SaveFile(Environment.CurrentDirectory, (file) =>
+		{
+			string ext = FileIO.DetermineFileExtension(file);
+			return $"test.{ext}";
+		}, ref packet);
+
+		Console.WriteLine(path);
+		Error.Page(HttpStatus.NotAcceptable, ref packet);
 	}
 }

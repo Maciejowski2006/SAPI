@@ -1,10 +1,9 @@
 ﻿using System.Net;
 using System.Text.RegularExpressions;
-using SAPI.Endpoints;
-using SAPI.Internal;
+using SAPI.API.Utilities;
 using SAPI.LLAPI;
-using SAPI.Utilities;
 using Sentry;
+using Debug = SAPI.LLAPI.Debug;
 
 namespace SAPI
 {
@@ -12,29 +11,23 @@ namespace SAPI
 	{
 		private static HttpListener listener;
 		private string url;
-		private static bool requestResolved;
-		private static List<IEndpoint> endpoints;
+		private static List<Endpoint> endpoints;
 		private static Regex dynamicRegex = new(":(.+?)(?:(?=/)|$)", RegexOptions.Compiled);
 
 		/// <summary>
-		/// Initalizes SAPI on default address: http://localhost:8000/
+		/// Initializes SAPI on default address: http://localhost:8000/
 		/// </summary>
-		/// <param name="url">Sets custom url - remember to put "/" at the end. If no parameter is provided, SAPI starts on default address</param>
 		public Server()
 		{
-			Logger logAccess = new("access", Logger.LogType.Access);
-			Logger logSystem = new("system", Logger.LogType.System);
-			Internals.access = logAccess;
-			Internals.system = logSystem;
-			Config.system = logSystem;
+			Debug.Init();
 
 			Config.Init();
 			url = Config.ReadConfig().Url;
 
-
 			listener = new HttpListener();
 			listener.Prefixes.Add(url);
-			endpoints = new List<IEndpoint>();
+			endpoints = new List<Endpoint>();
+			EndpointManager.FindAndMount(ref endpoints);
 		}
 
 		/// <summary>
@@ -51,7 +44,7 @@ namespace SAPI
 					       o.IsGlobalModeEnabled = true;
 				       }))
 				{
-					Internals.WriteLine("Sentry initialized");
+					Debug.Log("Sentry initialized");
 					StartImpl();
 				}
 			else
@@ -60,22 +53,17 @@ namespace SAPI
 
 		private void StartImpl()
 		{
-			Internals.WriteLine("Mounted endpoints:");
+			Debug.Log("Mounted endpoints:");
 			foreach (var endpoint in endpoints)
-				Internals.WriteLine($"{endpoint.method} {endpoint.url}");
+				Debug.Log($"{endpoint.url}");
 
 			listener.Start();
-			Internals.WriteLine($"Listening for connections on {url}");
+			Debug.Log($"Listening for connections on {url}");
 
 			var connectionHandler = ConnectionHandler();
 			connectionHandler.GetAwaiter().GetResult();
 
 			listener.Close();
-		}
-
-		public void MountEndpoint(IEndpoint endpoint)
-		{
-			endpoints.Add(endpoint);
 		}
 
 		private static async Task ConnectionHandler()
@@ -90,28 +78,20 @@ namespace SAPI
 
 					Internals.PrintRequestInfo(request);
 
-					// Check if path is mapped to any endpoint
-					if (Equals(endpoints, Enumerable.Empty<IEndpoint>()))
-					{
-						Error.ErrorPageResponse(HttpStatus.NotImplemented, ref response);
-						continue;
-					}
-
 					// Check if content is empty
 					if (request.HttpMethod == Method.POST.ToString() && request.ContentLength64 == 0)
 					{
-						Error.ErrorPageResponse(HttpStatus.BadRequest, ref response);
-						Internals.WriteLine("Content body is empty: aborting");
+						LLAPI.Utilities.Error.Page(HttpStatus.BadRequest, ref request, ref response);
+						Debug.Warn("Content body is empty: aborting");
 						response.Close();
 						continue;
 					}
 
+					bool requestResolved = false;
+					
 					// Endpoint handling
 					foreach (var endpoint in endpoints)
 					{
-						if (request.HttpMethod != endpoint.method.ToString())
-							continue;
-
 						// Split URLs into fragments
 						string[] requestUrl = request.Url.AbsolutePath.Trim('/').Split("/");
 						string[] endpointUrl = endpoint.url.Split("/");
@@ -121,6 +101,12 @@ namespace SAPI
 						// Check if requested URL matches static or dynamic endpoint
 						for (var i = 0; i < endpointUrl.Length; i++)
 						{
+							if (requestUrl.Length < endpointUrl.Length)
+							{
+								urlMatched = false;
+								break;
+							}
+							
 							if (string.Equals(endpointUrl[i], requestUrl[i]))
 								continue;
 
@@ -133,13 +119,14 @@ namespace SAPI
 							if (string.Equals(endpointUrl[i], "{recursive}"))
 								break;
 
-
 							urlMatched = false;
 							break;
 						}
 
 						if (urlMatched)
 						{
+							
+							response.AddHeader("Server", "SAPI");
 							endpoint.Task(ref request, ref response, parameters);
 							requestResolved = true;
 							response.Close();
@@ -148,7 +135,7 @@ namespace SAPI
 
 					// Throw 404 if result is not resolved by any of mounted endpoints
 					if (!requestResolved)
-						Error.ErrorPageResponse(HttpStatus.NotFound, ref response);
+						LLAPI.Utilities.Error.Page(HttpStatus.NotFound, ref request, ref response);
 				}
 				catch (Exception ex)
 				{

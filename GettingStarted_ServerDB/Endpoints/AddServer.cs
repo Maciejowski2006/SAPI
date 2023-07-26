@@ -1,18 +1,16 @@
-﻿using System.Net;
-using SAPI.Endpoints;
-using SAPI.Utilities;
-using ServerAPI.Models;
+﻿using SAPI;
+using SAPI.API.Utilities;
 using ServerAPI.Services;
+using Server = ServerAPI.Models.Server;
 
 namespace ServerAPI.Endpoints;
 
-public class AddServer : IEndpoint
+public class AddServer : Endpoint
 {
-	public string url { get; } = "add-server";
-	public Method method { get; } = Method.POST;
-	public void Task(ref HttpListenerRequest request, ref HttpListenerResponse response, Dictionary<string, string> parameters)
+	public override string url { get; } = "add-server";
+	protected override void Post(ref Packet packet)
 	{
-		Json.Fetch(out Server server, ref request);
+		Json.Fetch(out Server server, ref packet);
 		Database.AddServer(server);
 	}
 }

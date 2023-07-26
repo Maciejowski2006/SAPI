@@ -1,18 +1,16 @@
-﻿using System.Net;
-using SAPI.Endpoints;
-using SAPI.Utilities;
+﻿using SAPI;
+using SAPI.API.Utilities;
 
 namespace Testing.Endpoints
 {
-	public class Static : IEndpoint
+	public class Static : Endpoint
 	{
-		public string url { get; } = "static";
-		public Method method { get; } = Method.GET;
-		public void Task(ref HttpListenerRequest request, ref HttpListenerResponse response, Dictionary<string, string> parameters)
+		public override string url { get; } = "static";
+		protected override void Get(ref Packet packet)
 		{
 			string file = Path.Combine(Directory.GetCurrentDirectory(), "linus.mov");
 			
-			StaticContent.FileResponse(file, ref response);
+			FileIO.ServeFile(file, ref packet);
 		}
 	}
 }

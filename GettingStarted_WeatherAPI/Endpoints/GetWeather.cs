@@ -1,27 +1,25 @@
-﻿using System.Net;
-using SAPI.Endpoints;
-using SAPI.Utilities;
+﻿using SAPI;
+using SAPI.API.Utilities;
 using WeatherAPI.Models;
 using WeatherAPI.Services;
 
 namespace WeatherAPI.Endpoints;
 
-public class GetWeather : IEndpoint
+public class GetWeather : Endpoint
 {
 
-	public string url { get; } = "get-weather/:country/:city";
-	public Method method { get; } = Method.GET;
+	public override string url { get; } = "get-weather/:country/:city";
 
 	private List<City> cities;
 	
-	public void Task(ref HttpListenerRequest request, ref HttpListenerResponse response, Dictionary<string, string> parameters)
+	protected override void Get(ref Packet packet)
 	{
 		cities = Database.GetCities();
 
 		foreach (City city in cities)
 		{
-			if (city.Country == parameters["country"] && city.Name == parameters["city"])
-				Json.Response(city, ref response);
+			if (city.Country == packet.Parameters["country"] && city.Name == packet.Parameters["city"])
+				Json.Response(city, ref packet);
 		}
 	}
 }

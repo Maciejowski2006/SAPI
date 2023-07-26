@@ -9,8 +9,6 @@ public class ServerAPI
 	{
 		Server sapi = new();
 
-		sapi.MountEndpoint(new GetWeather());
-		
 		sapi.Start();
 	}
 }

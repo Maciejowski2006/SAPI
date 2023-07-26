@@ -1,19 +1,16 @@
-﻿using System.Net;
-using SAPI.Endpoints;
-using SAPI.Utilities;
+﻿using SAPI;
+using SAPI.API.Utilities;
 
 namespace Testing.Endpoints
 {
-	public class Dir : IEndpoint
+	public class Dir : Endpoint
 	{
-		public string url { get; } = "dir/:file/";
-		public Method method { get; } = Method.GET;
-		public void Task(ref HttpListenerRequest request, ref HttpListenerResponse response, Dictionary<string, string> parameters)
+		public override string url { get; } = "dir/:file";
+		protected override void Get(ref Packet packet)
 		{
 			string path = Path.Combine(Directory.GetCurrentDirectory(), "public");
 
-			StaticContent.HostDirectory(path, parameters, ref response);
+			FileIO.ServeDirectory(path, ref packet);
 		}
-		
 	}
 }
