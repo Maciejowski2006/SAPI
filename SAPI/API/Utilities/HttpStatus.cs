@@ -1,4 +1,4 @@
-﻿namespace SAPI.Utilities
+﻿namespace SAPI.API.Utilities
 {
 	public enum HttpStatus
 	{
@@ -8,8 +8,11 @@
 		Unauthorized,
 		Forbidden,
 		NotFound,
+		MethodNotAllowed,
 		NotAcceptable,
 		ProxyAuthenticationRequired,
+		ImATeapot,
+		EnhanceYourCalm,
 		InternalServerError,
 		NotImplemented,
 		BadGateway,

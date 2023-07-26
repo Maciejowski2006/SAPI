@@ -1,24 +1,34 @@
 ﻿using System.Net;
-using SAPI.Endpoints;
-using SAPI.Utilities;
+using SAPI;
+using SAPI.API.Utilities;
 
 namespace Testing.Endpoints
 {
-	public class Cookies : IEndpoint
+	public class Cookies : Endpoint
 	{
-		public string url { get; set; } = "cookies";
-		public Method method { get; set; } = Method.GET;
-		public void Task(ref HttpListenerRequest request, ref HttpListenerResponse response, Dictionary<string, string> parameters)
+		public override string url { get; } = "cookies";
+		protected override void Get(ref Packet packet)
 		{
-			if (SAPI.Utilities.Cookies.CheckForCookie("visit", out Cookie cookie, ref request))
+			if (packet.Parameters["passcode"] == "letmein")
 			{
-				SAPI.Utilities.Cookies.GiveCookie("visit", "false", ref response);
-				Error.ErrorPageResponse(HttpStatus.OK, ref response);
+				SAPI.API.Utilities.Cookies.GiveCookie(new Cookie("visit", "true"), ref packet);
+				Error.Page(HttpStatus.OK, ref packet);
 			}
 			else
 			{
-				SAPI.Utilities.Cookies.GiveCookie("visit", "true", ref response);
-				Error.ErrorPageResponse(HttpStatus.Forbidden, ref response);
+				Error.Page(HttpStatus.Unauthorized, ref packet);
+			}
+				
+				
+			if (SAPI.API.Utilities.Cookies.CheckForCookie("visit", out Cookie cookie, ref packet))
+			{
+				SAPI.API.Utilities.Cookies.GiveCookie(new ("visit", "false"), ref packet);
+				Error.Page(HttpStatus.OK, ref packet);
+			}
+			else
+			{
+				SAPI.API.Utilities.Cookies.GiveCookie(new ("visit", "true"), ref packet);
+				Error.Page(HttpStatus.Forbidden, ref packet);
 			}
 		}
 	}

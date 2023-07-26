@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace SAPI.Utilities
+namespace SAPI.API.Utilities
 {
 	public static class Cookies
 	{
@@ -10,10 +10,10 @@ namespace SAPI.Utilities
 		/// <param name="cookieName">Name of the cookie to check</param>
 		/// <param name="cookie">Return Cookie</param>
 		/// <param name="request">Pass from Task()</param>
-		/// <returns>Does cookie exists?</returns>
-		public static bool CheckForCookie(string cookieName, out Cookie? cookie, ref HttpListenerRequest request)
+		/// <returns>Does cookie exist?</returns>
+		public static bool CheckForCookie(string cookieName, out Cookie? cookie, ref Packet packet)
 		{
-			cookie = request.Cookies[cookieName];
+			cookie = packet.Request.Cookies[cookieName];
 
 			return cookie != null;
 		}
@@ -24,10 +24,9 @@ namespace SAPI.Utilities
 		/// <param name="cookieName">Name of cookie to be saved</param>
 		/// <param name="cookieValue">Value of cookie to be saved</param>
 		/// <param name="response">Pass from Task()</param>
-		public static void GiveCookie(string cookieName, string cookieValue, ref HttpListenerResponse response)
+		public static void GiveCookie(Cookie cookie, ref Packet packet)
 		{
-			Cookie cookie = new(cookieName, cookieValue);
-			response.AppendCookie(cookie);
+			packet.Response.AppendCookie(cookie);
 		}
 	}
 }

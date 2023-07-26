@@ -4,10 +4,11 @@
         <OutputType>Exe</OutputType>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+        <TargetFrameworks>net7.0;net6.0</TargetFrameworks>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\SAPI\SAPI.csproj" />
+      <ProjectReference Include="..\SAPI\SAPI.csproj" />
     </ItemGroup>
+
 </Project>

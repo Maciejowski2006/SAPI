@@ -1,22 +1,20 @@
-﻿using System.Net;
-using SAPI.Endpoints;
-using SAPI.Utilities;
+﻿using SAPI;
+using SAPI.API.Utilities;
 
 namespace Testing.Endpoints;
 
-public class DynamicGet : IEndpoint
+public class DynamicGet : Endpoint
 {
     record Data(string id, string name);
 
-	public string url { get; } = "dynamic/:id/test/:name";
-	public Method method { get; } = Method.GET;
-	public void Task(ref HttpListenerRequest request, ref HttpListenerResponse response, Dictionary<string, string> parameters)
+	public override string url { get; } = "dynamic/:id/test/:name";
+	protected override void Get(ref Packet packet)
 	{
-		Console.WriteLine(parameters["id"]);
-		Console.WriteLine(parameters["name"]);
+		Console.WriteLine(packet.Parameters["id"]);
+		Console.WriteLine(packet.Parameters["name"]);
 
-		Data data = new(parameters["id"], parameters["name"]);
+		Data data = new(packet.Parameters["id"], packet.Parameters["name"]);
 		
-		Json.Response(data, ref response);
+		Json.Response(data, ref packet);
 	}
 }
