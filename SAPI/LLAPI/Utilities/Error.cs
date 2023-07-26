@@ -6,7 +6,7 @@ using SAPI.API.Utilities;
 
 namespace SAPI.LLAPI.Utilities
 {
-	public static class Error
+	internal static class Error
 	{
 		/// <summary>
 		/// Wrapper to HighLevel implementation
