@@ -16,7 +16,7 @@ In your preferred IDE:
 By [downloading](https://github.com/Maciejowski2006/SAPI/releases) and referencing the DLL in your project.
 
 ## Usage
-For detailed explanation You can also see [wiki](https://github.com/Maciejowski2006/SAPI/wiki)
+For detailed explanation You can also see [wiki](https://docs.maciejowski.me/)
 ```csharp
 // Program.cs
 using SAPI;
@@ -27,33 +27,26 @@ public static void Main(string[] args)
 {
     // Init SAPI
     Server sapi = new();
-    
-    // Mount endpoints(routes)
-    sapi.MountEndpoint(new Ping());
-    
-    
-    // Start SAPI
     sapi.Start();
 }
 ```
 ```csharp
 // Endpoints/Ping.cs
 using System.Net;
-using SAPI.Endpoints;
-using SAPI.Utilities;
+using SAPI;
+using SAPI.API.Utilities;
 
 namespace Project.Endpoints
 {
-    public class Ping : IEndpoint
+    public class Ping : Endpoint
     {
         public string url { get; } = "ping";
-        public Method method { get; } = Method.GET;
 
-        public override void Task(ref HttpListenerRequest request, ref HttpListenerResponse response, Dictionary<string, string> parameters)
+        private override void Get(ref Packet packet)
         {
             Console.WriteLine("Ping!");
             
-            Utilities.HtmlResponse("Pong!", ref response);
+            Error.Page(HttpStatus.EnhanceYourCalm, ref packet);
         }
     }
 }

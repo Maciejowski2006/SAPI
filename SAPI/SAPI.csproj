@@ -9,7 +9,7 @@
         <Copyright>Copyright © Maciejowski 2022-2023</Copyright>
         <PackageLicenseUrl>https://github.com/Maciejowski2006/SAPI/blob/master/LICENSE.md</PackageLicenseUrl>
         <RepositoryUrl>https://github.com/Maciejowski2006/SAPI</RepositoryUrl>
-        <PackageVersion>9.1.0</PackageVersion>
+        <PackageVersion>10.0.0</PackageVersion>
         <LangVersion>11</LangVersion>
         <Authors>Maciejowski</Authors>
         <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
