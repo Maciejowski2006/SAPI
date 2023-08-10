@@ -11,7 +11,7 @@ Add as dependency in NuGet
 Install-Package SAPI -ProjectName <project>
 ```
 In your preferred IDE:
-![SAPI in rider's NuGet PM](./Screenshots/nuget.png)
+![SAPI in rider's NuGet PM](https://github.com/Maciejowski2006/SAPI/blob/master/Screenshots/docs%20v1/nuget.png)
 
 By [downloading](https://github.com/Maciejowski2006/SAPI/releases) and referencing the DLL in your project.
 
