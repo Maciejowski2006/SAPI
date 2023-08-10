@@ -13,10 +13,10 @@ Install-Package SAPI -ProjectName <project>
 In your preferred IDE:
 ![SAPI in rider's NuGet PM](https://github.com/Maciejowski2006/SAPI/blob/master/Screenshots/docs%20v1/nuget.png)
 
-By [downloading](https://github.com/Maciejowski2006/SAPI/releases) and referencing the DLL in your project.
+By [downloading](https://github.com/Maciejowski2006/SAPI/releases) and referencing the DLL (and its dependencies) in your project.
 
 ## Usage
-For detailed explanation You can also see [wiki](https://docs.maciejowski.me/)
+For detailed explanation You can also see [docs](https://docs.maciejowski.me/)
 ```csharp
 // Program.cs
 using SAPI;
@@ -34,13 +34,12 @@ public static void Main(string[] args)
 // Endpoints/Ping.cs
 using System.Net;
 using SAPI;
-using SAPI.API.Utilities;
 
 namespace Project.Endpoints
 {
     public class Ping : Endpoint
     {
-        public string url { get; } = "ping";
+        public override string url { get; } = "ping";
 
         private override void Get(ref Packet packet)
         {
