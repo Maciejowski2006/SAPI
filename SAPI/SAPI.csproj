@@ -13,6 +13,7 @@
         <LangVersion>11</LangVersion>
         <Authors>Maciejowski</Authors>
         <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+        <PackageIcon>sapi_logo.png</PackageIcon>
     </PropertyGroup>
 
     <ItemGroup>
@@ -21,6 +22,14 @@
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
         <PackageReference Include="Sentry" Version="3.34.0" />
 
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="..\sapi_logo.png">
+        <Pack>True</Pack>
+        <PackagePath></PackagePath>
+        <Link>sapi_logo.png</Link>
+      </None>
     </ItemGroup>
 
 </Project>

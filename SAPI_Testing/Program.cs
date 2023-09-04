@@ -1,6 +1,5 @@
-﻿using Testing.Endpoints;
-using SAPI;
-using SAPI.API;
+﻿using SAPI;
+using Debug = SAPI.API.Debug;
 
 public class SAPI_Testing
 {
