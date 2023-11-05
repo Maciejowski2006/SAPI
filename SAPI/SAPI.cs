@@ -35,6 +35,11 @@ namespace SAPI
 		/// </summary>
 		public void Start()
 		{
+			// Skip Sentry if in Debug mode
+			#if DEBUG
+			StartImpl();
+			return;
+			#endif
 			if (Config.ReadConfig().EnableErrorReporting)
 				using (SentrySdk.Init(o =>
 				       {
