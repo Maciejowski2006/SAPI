@@ -12,6 +12,7 @@ namespace SAPI
 		private static HttpListener listener;
 		private string url;
 		private static List<Endpoint> endpoints;
+		private static List<IExtensionBase> extensions = new();
 		private static Regex dynamicRegex = new(":(.+?)(?:(?=/)|$)", RegexOptions.Compiled);
 
 		/// <summary>
@@ -30,6 +31,12 @@ namespace SAPI
 			EndpointManager.FindAndMount(ref endpoints);
 		}
 
+		public Server Use(IExtensionBase extension)
+		{
+			extensions.Add(extension);
+			return this;
+		}
+		
 		/// <summary>
 		/// Starts the SAPI server. Execute at the end.
 		/// </summary>
@@ -58,6 +65,9 @@ namespace SAPI
 
 		private void StartImpl()
 		{
+			foreach (IExtensionBase extension in extensions)
+				extension.Init();
+			
 			Debug.Log("Mounted endpoints:");
 			foreach (var endpoint in endpoints)
 				Debug.Log($"{endpoint.url}");
