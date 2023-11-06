@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Net;
+using System.Text;
 
 namespace SAPI.API.Utilities
 {
@@ -16,11 +17,11 @@ namespace SAPI.API.Utilities
 		/// </summary>
 		/// <param name="keys">List of all API keys authorized</param>
 		/// <param name="packet">Packet ref you got from server</param>
-		public static bool CheckForApiKey(List<string> keys, ref Packet packet)
+		public static bool CheckForApiKey(List<string> keys, HttpListenerContext context)
 		{
 			try
 			{
-				if (GetApiKey(out string? _key, ref packet))
+				if (GetApiKey(out string? _key, context))
 					foreach (var key in keys)
 					{
 						if (_key == key)
@@ -41,11 +42,11 @@ namespace SAPI.API.Utilities
 		/// <param name="credentialsList">List of all usernames and passwords authorized</param>
 		/// <param name="hashingFunction">Password hashing algorithm. Takes un-hashed password as parameter, returns hashed password</param>
 		/// <param name="packet">Packet ref you got from server</param>
-		public static bool CheckForBasicCredentials(List<BasicCredentials> credentialsList, Func<string, string> hashingFunction, ref Packet packet)
+		public static bool CheckForBasicCredentials(List<BasicCredentials> credentialsList, Func<string, string> hashingFunction, HttpListenerContext context)
 		{
 			try
 			{
-				if (GetBasicCredentials(out BasicCredentials? credentials, ref packet))
+				if (GetBasicCredentials(out BasicCredentials? credentials, context))
 				{
 					credentials.HashedPassword = hashingFunction(credentials.Password);
 					foreach (BasicCredentials _credentials in credentialsList)
@@ -63,9 +64,9 @@ namespace SAPI.API.Utilities
 			return false;
 		}
 		
-		public static bool GetApiKey(out string? key, ref Packet packet)
+		public static bool GetApiKey(out string? key, HttpListenerContext context)
 		{
-			key = packet.Request.Headers.Get("x-api-key");
+			key = context.Request.Headers.Get("x-api-key");
 
 			if (key is null)
 				return false;
@@ -78,14 +79,14 @@ namespace SAPI.API.Utilities
 		/// </summary>
 		/// <param name="credentials">Variable contains passed user credentials</param>
 		/// <param name="packet">Packet ref you got from server</param>
-		public static bool GetBasicCredentials(out BasicCredentials? credentials, ref Packet packet)
+		public static bool GetBasicCredentials(out BasicCredentials? credentials, HttpListenerContext context)
 		{
 			credentials = null;
 			try
 			{
-				if (packet.Request.Headers.Get("Authorization").Contains("Basic "))
+				if (context.Request.Headers.Get("Authorization").Contains("Basic "))
 				{
-					string authData = packet.Request.Headers.GetValues("Authorization").GetValue(0).ToString().Substring(6);
+					string authData = context.Request.Headers.GetValues("Authorization").GetValue(0).ToString().Substring(6);
 
 					byte[] decodedBase64 = Convert.FromBase64String(authData);
 

@@ -9,10 +9,9 @@ namespace SAPI
 	{
 		public abstract string url { get; }
 
-		public void Task(ref HttpListenerRequest request, ref HttpListenerResponse response, Dictionary<string, string> parameters)
+		public void Task(HttpListenerContext context, Dictionary<string, string> parameters)
 		{
-			Packet packet = new(ref request, ref response, parameters);
-			Method method = Enum.Parse<Method>(request.HttpMethod);
+			Method method = Enum.Parse<Method>(context.Request.HttpMethod);
 
 			if (method != Method.OPTIONS)
 			{
@@ -20,7 +19,7 @@ namespace SAPI
 
 				if (!EndpointManager.CheckForDefinedMethod(methodCapitalized, GetType()))
 				{
-					Error.Page(HttpStatus.MethodNotAllowed, ref packet);
+					Error.Page(HttpStatus.MethodNotAllowed, context);
 					return;
 				}
 			}
@@ -31,37 +30,37 @@ namespace SAPI
 				{
 					case Method.GET:
 					{
-						Get(ref packet);
+						Get(context, parameters);
 						break;
 					}
 					case Method.POST:
 					{
-						Post(ref packet);
+						Post(context, parameters);
 						break;
 					}
 					case Method.PUT:
 					{
-						Put(ref packet);
+						Put(context, parameters);
 						break;
 					}
 					case Method.PATCH:
 					{
-						Patch(ref packet);
+						Patch(context, parameters);
 						break;
 					}
 					case Method.DELETE:
 					{
-						Delete(ref packet);
+						Delete(context, parameters);
 						break;
 					}
 					case Method.OPTIONS:
 					{
-						Options(ref packet, new CorsOptions());
+						Options(context, parameters, new CorsOptions());
 						break;
 					}
 					case Method.HEAD:
 					{
-						Head(ref packet);
+						Head(context, parameters);
 						break;
 					}
 				}
@@ -70,49 +69,49 @@ namespace SAPI
 			{
 				Debug.Error($"Error: {e.Message}");
 				Debug.Error($"Stack Trace: {e.StackTrace}");
-				Error.Page(HttpStatus.InternalServerError, ref packet);
+				Error.Page(HttpStatus.InternalServerError, context);
 			}
 		}
 
-		protected virtual void Get(ref Packet packet)
+		protected virtual void Get(HttpListenerContext context, Dictionary<string, string> parameters)
 		{
 		}
 
-		protected virtual void Post(ref Packet packet)
+		protected virtual void Post(HttpListenerContext context, Dictionary<string, string> parameters)
 		{
 		}
 
-		protected virtual void Put(ref Packet packet)
+		protected virtual void Put(HttpListenerContext context, Dictionary<string, string> parameters)
 		{
 		}
 
-		protected virtual void Patch(ref Packet packet)
+		protected virtual void Patch(HttpListenerContext context, Dictionary<string, string> parameters)
 		{
 		}
 
-		protected virtual void Delete(ref Packet packet)
+		protected virtual void Delete(HttpListenerContext context, Dictionary<string, string> parameters)
 		{
 		}
 
-		protected virtual void Options(ref Packet packet, CorsOptions cors)
+		protected virtual void Options(HttpListenerContext context, Dictionary<string, string> parameters, CorsOptions cors)
 		{
-			packet.Response.AddHeader("Access-Control-Allow-Origin", cors.AllowOrigin);
+			context.Response.AddHeader("Access-Control-Allow-Origin", cors.AllowOrigin);
 			if (cors.AllowCredentials)
-				packet.Response.AddHeader("Access-Control-Allow-Credentials", "true");
+				context.Response.AddHeader("Access-Control-Allow-Credentials", "true");
 			
-			packet.Response.AddHeader("Access-Control-Max-Age", cors.MaxAge.ToString());
+			context.Response.AddHeader("Access-Control-Max-Age", cors.MaxAge.ToString());
 			if (cors.AllowHeaders.Length > 0)
 			{
 				string allowHeaders = String.Join(", ", cors.AllowHeaders);
-				packet.Response.AddHeader("Access-Control-Allow-Headers", allowHeaders);
+				context.Response.AddHeader("Access-Control-Allow-Headers", allowHeaders);
 			}
 
-			packet.Response.AddHeader("Access-Control-Allow-Methods", EndpointManager.GetDefinedMethods(GetType()));
+			context.Response.AddHeader("Access-Control-Allow-Methods", EndpointManager.GetDefinedMethods(GetType()));
 		}
 
-		protected void Head(ref Packet packet)
+		private void Head(HttpListenerContext context, Dictionary<string, string> parameters)
 		{
-			Get(ref packet);
+			Get(context, parameters);
 		}
 	}
 }
