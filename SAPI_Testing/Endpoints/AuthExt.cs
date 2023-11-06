@@ -10,14 +10,14 @@ namespace Testing.Endpoints
 	{
 		public override string url { get; } = "auth-ext";
         
-		protected override void Get(ref Packet packet)
+		protected override void Get(HttpListenerContext context, Dictionary<string, string> parameters)
 		{
-			SAPI.LLAPI.Utilities.Html.HtmlResponse("<h1>GOOD</h1>", ref packet);
+			SAPI.LLAPI.Utilities.Html.HtmlResponse("<h1>GOOD</h1>", context);
 		}
 
-		protected override void Post(ref Packet packet)
+		protected override void Post(HttpListenerContext context, Dictionary<string, string> parameters)
 		{
-			Json.Fetch(out NewAuth auth, ref packet);
+			Json.Fetch(out NewAuth auth, context);
 			
 			Identity identity = new()
 			{
@@ -25,17 +25,17 @@ namespace Testing.Endpoints
 				Password = auth.password
 			};
 			if (identity.Create())
-				Error.Page(HttpStatus.OK, ref packet);
+				Error.Page(HttpStatus.OK, context);
 			else
-				Error.Page(HttpStatus.BadRequest, ref packet);
+				Error.Page(HttpStatus.BadRequest, context);
 			
-			Session.GenerateSessionToken(identity, packet);
+			Session.GenerateSessionToken(identity, context);
 			
 			Cookie cookie = new("test", "test")
 			{
 				Expires = DateTime.UtcNow.AddDays(1)
 			};
-			packet.Response.AppendCookie(cookie);
+			context.Response.AppendCookie(cookie);
 		}
 
 		public record NewAuth(string username, string password);

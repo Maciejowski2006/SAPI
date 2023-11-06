@@ -7,7 +7,7 @@ namespace SAPI.Auth
 	{
 		public static List<SessionToken> SessionTokens = new();
 
-		public static void GenerateSessionToken(Identity identity, Packet packet)
+		public static void GenerateSessionToken(Identity identity, HttpListenerContext context)
 		{
 			SessionToken token = new()
 			{
