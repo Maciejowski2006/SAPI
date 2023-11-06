@@ -1,4 +1,5 @@
-﻿using SAPI;
+﻿using System.Net;
+using SAPI;
 using SAPI.API.Utilities;
 
 namespace Testing.Endpoints;
@@ -7,7 +8,7 @@ public class ApiAuth : Endpoint
 {
 	public override string url { get; } = "auth";
 
-	protected override void Get(ref Packet packet)
+	protected override void Get(HttpListenerContext context, Dictionary<string, string> parameters)
 	{
 		List<BasicCredentials> credentials = new ()
 		{
@@ -25,9 +26,10 @@ public class ApiAuth : Endpoint
 		//bool keyAuth = Auth.GetApiKey(out string? key, "x-api-key", ref packet);
 
 		// bool keyAuth = Auth.CheckForApiKey(keys, "x-api-key", ref packet);
-		bool userPassAuth = Auth.CheckForBasicCredentials(credentials, (pass) => pass, ref packet);
+
+		// bool userPassAuth = Auth.CheckForBasicCredentials(credentials, (pass) => pass, ref packet);
 
 		// Console.WriteLine($"Key Auth: {keyAuth}");
-		Console.WriteLine($"User+Password Auth: {userPassAuth}");
+		// Console.WriteLine($"User+Password Auth: {userPassAuth}");
 	}
 }

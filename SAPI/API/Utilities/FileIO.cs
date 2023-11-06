@@ -26,9 +26,9 @@ namespace SAPI.API.Utilities
 		/// <param name="namingScheme">A naming scheme that the file will follow</param>
 		/// <param name="packet">Packet from HTTP method</param>
 		/// <returns>Path to the file</returns>
-		public static string SaveFile(string path, FileNamingScheme namingScheme, ref Packet packet)
+		public static string SaveFile(string path, FileNamingScheme namingScheme, HttpListenerContext context)
 		{
-			string tempFile = LowLevelAPI.SaveFile(packet.Request.ContentEncoding, LowLevelAPI.GetBoundary(packet.Request.ContentType), packet.Request.InputStream);
+			string tempFile = LowLevelAPI.SaveFile(context.Request.ContentEncoding, LowLevelAPI.GetBoundary(context.Request.ContentType), context.Request.InputStream);
 
 			switch (namingScheme)
 			{
@@ -71,9 +71,9 @@ namespace SAPI.API.Utilities
 		/// <param name="customFileNameHandler">Custom method for naming files: param -> temp file location; return -> new file name(with extension)</param>
 		/// <param name="packet">Packet from HTTP method</param>
 		/// <returns>Path to file</returns>
-		public static string SaveFile(string path, Func<string, string> customFileNameHandler, ref Packet packet)
+		public static string SaveFile(string path, Func<string, string> customFileNameHandler, HttpListenerContext context)
 		{
-			string tempFile = LowLevelAPI.SaveFile(packet.Request.ContentEncoding, LowLevelAPI.GetBoundary(packet.Request.ContentType), packet.Request.InputStream);
+			string tempFile = LowLevelAPI.SaveFile(context.Request.ContentEncoding, LowLevelAPI.GetBoundary(context.Request.ContentType), context.Request.InputStream);
 
 			fileName = customFileNameHandler(tempFile);
 
@@ -154,7 +154,7 @@ namespace SAPI.API.Utilities
 		/// </summary>
 		/// <param name="path">Path to file</param>
 		/// <param name="packet">Packet from HTTP method</param>
-		public static void ServeFile(string path, ref Packet packet)
+		public static void ServeFile(string path, HttpListenerContext context)
 		{
 			if (File.Exists(path))
 				try
@@ -163,38 +163,38 @@ namespace SAPI.API.Utilities
 					{
 						string file = Path.GetFileName(path);
 						
-						//Adding permanent http response headers
-						packet.Response.ContentType = mimeTypeMappings.TryGetValue(Path.GetExtension(path), out string mime) ? mime : "application/octet-stream";
+						//Adding permanent httpcontextresponse headers
+						context.Response.ContentType = mimeTypeMappings.TryGetValue(Path.GetExtension(path), out string mime) ? mime : "application/octet-stream";
 
-						packet.Response.ContentLength64 = input.Length;
-						packet.Response.AddHeader("Date", DateTime.Now.ToString("r"));
-						packet.Response.AddHeader("Last-Modified", File.GetLastWriteTime(path).ToString("r"));
-						packet.Response.AddHeader("Content-Disposition", $"filename={file}");
+						context.Response.ContentLength64 = input.Length;
+						context.Response.AddHeader("Date", DateTime.Now.ToString("r"));
+						context.Response.AddHeader("Last-Modified", File.GetLastWriteTime(path).ToString("r"));
+						context.Response.AddHeader("Content-Disposition", $"filename={file}");
 
 						var buffer = new byte[1024 * 32];
 						int nbytes;
 						while ((nbytes = input.Read(buffer, 0, buffer.Length)) > 0)
 						{
-							if (packet.Request.HttpMethod != "HEAD")
+							if (context.Request.HttpMethod != "HEAD")
 							{
-								packet.Response.OutputStream.Write(buffer, 0, nbytes);
+								context.Response.OutputStream.Write(buffer, 0, nbytes);
 							}
 						}
 
 						input.Close();
-						packet.Response.OutputStream.Flush();
+						context.Response.OutputStream.Flush();
 					}
 
-					packet.Response.StatusCode = (int)HttpStatusCode.OK;
+					context.Response.StatusCode = (int)HttpStatusCode.OK;
 				}
 				catch
 				{
-					packet.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+					context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 				}
 			else
-				packet.Response.StatusCode = (int)HttpStatusCode.NotFound;
+				context.Response.StatusCode = (int)HttpStatusCode.NotFound;
 
-			packet.Response.OutputStream.Close();
+			context.Response.OutputStream.Close();
 		}
 
 		/// <summary>
@@ -202,7 +202,7 @@ namespace SAPI.API.Utilities
 		/// </summary>
 		/// <param name="path">Path to directory</param>
 		/// <param name="packet">Packet from HTTP method</param>
-		public static void ServeDirectory(string path, ref Packet packet)
+		public static void ServeDirectory(string path, HttpListenerContext context, Dictionary<string, string> parameters)
 		{
 			try
 			{
@@ -212,9 +212,9 @@ namespace SAPI.API.Utilities
 				{
 					string fileName = Path.GetFileName(fileInDir);
 
-					if (fileName == packet.Parameters["file"])
+					if (fileName == parameters["file"])
 					{
-						ServeFile(fileInDir, ref packet);
+						ServeFile(fileInDir, context);
 						break;
 					}
 				}
@@ -222,7 +222,7 @@ namespace SAPI.API.Utilities
 			catch (Exception e)
 			{
 				Debug.Log($"Error: {e}");
-				Error.Page(HttpStatus.NotFound, ref packet);
+				Error.Page(HttpStatus.NotFound, context);
 			}
 		}
 
@@ -231,12 +231,12 @@ namespace SAPI.API.Utilities
 		/// </summary>
 		/// <param name="path">Path to directory</param>
 		/// <param name="packet">Packet from HTTP method</param>
-		public static void ServeDirectoryRecursively(string path, string url, ref Packet packet)
+		public static void ServeDirectoryRecursively(string path, string url, HttpListenerContext context)
 		{
 			try
 			{
 				path = path.Replace('\\', '/');
-				string recursivePath = packet.Request.Url.AbsolutePath.Substring(url.LastIndexOf('{') + 1);
+				string recursivePath = context.Request.Url.AbsolutePath.Substring(url.LastIndexOf('{') + 1);
 				List<string> filesInDir = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories).ToList();
 				List<string> absoluteFiles = new();
 
@@ -248,7 +248,7 @@ namespace SAPI.API.Utilities
 				foreach ((string rel, string abs) file in zip)
 					if (recursivePath == file.abs)
 					{
-						ServeFile(file.rel, ref packet);
+						ServeFile(file.rel, context);
 						break;
 					}
 			}
@@ -259,7 +259,7 @@ namespace SAPI.API.Utilities
 			catch (Exception e)
 			{
 				SentryWrapper.CaptureException(e);
-				Error.Page(HttpStatus.InternalServerError, ref packet);
+				Error.Page(HttpStatus.InternalServerError, context);
 			}
 		}
 

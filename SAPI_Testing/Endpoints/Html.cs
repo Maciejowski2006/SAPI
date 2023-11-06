@@ -1,4 +1,5 @@
-﻿using SAPI;
+﻿using System.Net;
+using SAPI;
 
 namespace Testing.Endpoints
 {
@@ -6,16 +7,16 @@ namespace Testing.Endpoints
 	{
 		public override string url { get; } = "html";
 
-		protected override void Get(ref Packet packet)
+		protected override void Get(HttpListenerContext context, Dictionary<string, string> parameters)
 		{
-			SAPI.LLAPI.Utilities.Html.HtmlResponse("test", ref packet);
+			SAPI.LLAPI.Utilities.Html.HtmlResponse("test", context);
 		}
 
-		protected override void Options(ref Packet packet, CorsOptions cors)
+		protected override void Options(HttpListenerContext context, Dictionary<string, string> parameters, CorsOptions cors)
 		{
 			cors = new CorsBuilder().AllowOrigin(AccessControlAllowOrigin.All).MaxAge(86400).Build();
 
-			base.Options(ref packet, cors);
+			base.Options(context, parameters, cors);
 		}
 	}
 }

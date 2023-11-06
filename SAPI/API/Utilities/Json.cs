@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Net;
+using System.Text;
 using Newtonsoft.Json;
 
 namespace SAPI.API.Utilities
@@ -10,18 +11,18 @@ namespace SAPI.API.Utilities
 		/// </summary>
 		/// <param name="json">Add here your object to send with json</param>
 		/// <param name="response">Response ref you got from server</param>
-		public static void Response<T>(T json, ref Packet packet)
+		public static void Response<T>(T json, HttpListenerContext context)
 		{
 			var serializedJson = JsonConvert.SerializeObject(json);
 			var data = Encoding.UTF8.GetBytes(serializedJson);
-			packet.Response.ContentEncoding = Encoding.UTF8;
-			packet.Response.ContentType = "application/json";
-			packet.Response.ContentLength64 = data.LongLength;
-			packet.Response.StatusCode = 200;
+			context.Response.ContentEncoding = Encoding.UTF8;
+			context.Response.ContentType = "application/json";
+			context.Response.ContentLength64 = data.LongLength;
+			context.Response.StatusCode = 200;
 
-			if (packet.Request.HttpMethod != "HEAD")
+			if (context.Request.HttpMethod != "HEAD")
 			{
-				packet.Response.OutputStream.Write(data, 0, data.Length);
+				context.Response.OutputStream.Write(data, 0, data.Length);
 			}
 		}
 
@@ -30,9 +31,9 @@ namespace SAPI.API.Utilities
 		/// </summary>
 		/// <param name="json">Add here your instance of an object to be serialized</param>
 		/// <param name="request">Request ref you got from server - argument in Task()</param>
-		public static void Fetch<T>(out T json, ref Packet packet)
+		public static void Fetch<T>(out T json, HttpListenerContext context)
 		{
-			StreamReader reader = new(packet.Request.InputStream, packet.Request.ContentEncoding);
+			StreamReader reader = new(context.Request.InputStream, context.Request.ContentEncoding);
 
 			var data = reader.ReadToEnd();
 			json = JsonConvert.DeserializeObject<T>(data);
