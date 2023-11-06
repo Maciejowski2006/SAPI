@@ -11,9 +11,9 @@ namespace SAPI.API.Utilities
 		/// <param name="cookie">Return Cookie</param>
 		/// <param name="request">Pass from Task()</param>
 		/// <returns>Does cookie exist?</returns>
-		public static bool CheckForCookie(string cookieName, out Cookie? cookie, ref Packet packet)
+		public static bool CheckForCookie(string cookieName, out Cookie? cookie, HttpListenerContext context)
 		{
-			cookie = packet.Request.Cookies[cookieName];
+			cookie = context.Request.Cookies[cookieName];
 
 			return cookie != null;
 		}
@@ -24,9 +24,9 @@ namespace SAPI.API.Utilities
 		/// <param name="cookieName">Name of cookie to be saved</param>
 		/// <param name="cookieValue">Value of cookie to be saved</param>
 		/// <param name="response">Pass from Task()</param>
-		public static void GiveCookie(Cookie cookie, ref Packet packet)
+		public static void GiveCookie(Cookie cookie, HttpListenerContext context)
 		{
-			packet.Response.AppendCookie(cookie);
+			context.Response.AppendCookie(cookie);
 		}
 	}
 }

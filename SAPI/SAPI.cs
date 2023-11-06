@@ -54,13 +54,13 @@ namespace SAPI
 		private void StartImpl()
 		{
 			Debug.Log("Mounted endpoints:");
-			foreach (var endpoint in endpoints)
+			foreach (Endpoint endpoint in endpoints)
 				Debug.Log($"{endpoint.url}");
 
 			listener.Start();
 			Debug.Log($"Listening for connections on {url}");
 
-			var connectionHandler = ConnectionHandler();
+			Task connectionHandler = ConnectionHandler();
 			connectionHandler.GetAwaiter().GetResult();
 
 			listener.Close();
@@ -71,17 +71,17 @@ namespace SAPI
 			while (true)
 				try
 				{
-					var ctx = await listener.GetContextAsync();
+					HttpListenerContext context = await listener.GetContextAsync();
 
-					var request = ctx.Request;
-					var response = ctx.Response;
+					HttpListenerRequest request = context.Request;
+					HttpListenerResponse response = context.Response;
 
 					Internals.PrintRequestInfo(request);
 
 					// Check if content is empty
 					if (request.HttpMethod == Method.POST.ToString() && request.ContentLength64 == 0)
 					{
-						LLAPI.Utilities.Error.Page(HttpStatus.BadRequest, ref request, ref response);
+						Error.Page(HttpStatus.BadRequest, context);
 						Debug.Warn("Content body is empty: aborting");
 						response.Close();
 						continue;
@@ -90,16 +90,16 @@ namespace SAPI
 					bool requestResolved = false;
 					
 					// Endpoint handling
-					foreach (var endpoint in endpoints)
+					foreach (Endpoint endpoint in endpoints)
 					{
 						// Split URLs into fragments
 						string[] requestUrl = request.Url.AbsolutePath.Trim('/').Split("/");
 						string[] endpointUrl = endpoint.url.Split("/");
-						var urlMatched = true;
+						bool urlMatched = true;
 						Dictionary<string, string> parameters = new();
 
 						// Check if requested URL matches static or dynamic endpoint
-						for (var i = 0; i < endpointUrl.Length; i++)
+						for (int i = 0; i < endpointUrl.Length; i++)
 						{
 							if (requestUrl.Length < endpointUrl.Length)
 							{
@@ -127,7 +127,7 @@ namespace SAPI
 						{
 							
 							response.AddHeader("Server", "SAPI");
-							endpoint.Task(ref request, ref response, parameters);
+							endpoint.Task(context, parameters);
 							requestResolved = true;
 							response.Close();
 						}
@@ -135,7 +135,7 @@ namespace SAPI
 
 					// Throw 404 if result is not resolved by any of mounted endpoints
 					if (!requestResolved)
-						LLAPI.Utilities.Error.Page(HttpStatus.NotFound, ref request, ref response);
+						Error.Page(HttpStatus.NotFound, context);
 				}
 				catch (Exception ex)
 				{
